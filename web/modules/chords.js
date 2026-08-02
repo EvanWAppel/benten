@@ -3,6 +3,7 @@
 
 import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
+import { fretboardSVG } from "./fretboard.js";
 
 const TONICS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -10,6 +11,7 @@ const state = {
   tonic: "C",
   mode: "major", // "major" | "minor"
   progression: [], // chord symbols, in order
+  active: null, // { scale, chordSymbol } currently shown on the fretboard
 };
 
 let root;
@@ -96,7 +98,15 @@ function renderSuggestions() {
       <li>
         <span class="sym">${c.symbol}</span>
         <span class="arrow">→</span>
-        <span class="scales">${c.scales.join(" · ")}</span>
+        <span class="scales">
+          ${c.scales
+            .map(
+              (sc) =>
+                `<button class="scale-pick ${isActive(sc, c.symbol) ? "is-active" : ""}"
+                         data-scale="${sc}" data-chord="${c.symbol}">${sc}</button>`,
+            )
+            .join(" ")}
+        </span>
         ${c.inKey ? "" : `<span class="tag">outside</span>`}
       </li>`,
     )
@@ -105,7 +115,29 @@ function renderSuggestions() {
   return `
     <h3>Scales to play over it</h3>
     <p class="summary muted">${summary}</p>
-    <ul class="suggestions">${rows || `<li class="muted">no recognized chords yet</li>`}</ul>`;
+    <ul class="suggestions">${rows || `<li class="muted">no recognized chords yet</li>`}</ul>
+    ${renderFretboard()}`;
+}
+
+function isActive(scale, chordSymbol) {
+  return state.active && state.active.scale === scale && state.active.chordSymbol === chordSymbol;
+}
+
+function renderFretboard() {
+  if (!state.active) {
+    return `<p class="muted hint">Pick a scale above to see it on the fretboard.</p>`;
+  }
+  const { scale, chordSymbol } = state.active;
+  return `
+    <div class="fretboard-wrap">
+      <h4>${chordSymbol} · ${scale} <span class="on-guitar muted">on guitar</span></h4>
+      ${fretboardSVG({ scale, chordSymbol })}
+      <p class="legend muted">
+        <span class="key-dot fb-root"></span> root
+        <span class="key-dot fb-chord"></span> chord tone
+        <span class="key-dot fb-scale"></span> scale note
+      </p>
+    </div>`;
 }
 
 function chordChip(sym, i) {
@@ -157,6 +189,15 @@ function wire() {
     b.addEventListener("click", () =>
       move(Number(b.dataset.move), Number(b.dataset.dir)),
     ),
+  );
+
+  root.querySelectorAll("[data-scale]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const next = { scale: b.dataset.scale, chordSymbol: b.dataset.chord };
+      // Clicking the active scale again toggles it off.
+      state.active = isActive(next.scale, next.chordSymbol) ? null : next;
+      render();
+    }),
   );
 }
 

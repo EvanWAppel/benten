@@ -56,11 +56,11 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ## Group F — Guitar fretboard (MVP)
 
-- [ ] Render a standard-tuning guitar fretboard (SVG or canvas), tuning-agnostic core.
-- [ ] Plot a given scale's notes across the neck.
-- [ ] Highlight chord tones vs. the rest of the scale distinctly.
-- [ ] Toggle which suggested scale is shown on the neck.
-- [ ] Label notes / degrees on the diagram.
+- [x] Render a standard-tuning guitar fretboard (SVG or canvas), tuning-agnostic core.
+- [x] Plot a given scale's notes across the neck.
+- [x] Highlight chord tones vs. the rest of the scale distinctly.
+- [x] Toggle which suggested scale is shown on the neck.
+- [x] Label notes / degrees on the diagram. *(note names; degree toggle deferred)*
 
 ## Group G — Save to composition/ (MVP)
 
