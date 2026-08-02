@@ -1,0 +1,65 @@
+:root {
+  --bg: #14161a;
+  --panel: #1c1f26;
+  --ink: #e6e3dc;
+  --muted: #8b8f99;
+  --accent: #6fb7c9; /* water */
+  --line: #2a2e37;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  padding: 1.25rem 1.5rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.topbar h1 { margin: 0; font-weight: 600; letter-spacing: 0.02em; }
+.tagline { margin: 0.15rem 0 0.75rem; color: var(--muted); font-style: italic; font-size: 0.9rem; }
+
+.modules {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.module {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  font: inherit;
+  cursor: pointer;
+}
+.module:hover:not(:disabled) { color: var(--ink); }
+.module.is-active { color: var(--ink); border-color: var(--accent); }
+.module.is-stub { opacity: 0.4; cursor: not-allowed; }
+
+main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+.module-view h2 { margin-top: 0; font-weight: 600; }
+.muted, .muted code { color: var(--muted); }
+code { background: var(--panel); padding: 0.05rem 0.3rem; border-radius: 4px; }
+
+.statusbar {
+  border-top: 1px solid var(--line);
+  padding: 0.5rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}

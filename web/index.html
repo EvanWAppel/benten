@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>benten</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>benten</h1>
+    <p class="tagline">the bench, with tools on it</p>
+  </header>
+
+  <nav class="modules" aria-label="modules">
+    <button class="module is-active" data-module="chords" aria-current="true">Chords</button>
+    <button class="module is-stub" data-module="studio" disabled title="Phase 2">Studio</button>
+    <button class="module is-stub" data-module="tabs" disabled title="Phase 3">Tabs</button>
+    <button class="module is-stub" data-module="effects" disabled title="Phase 4">Effects</button>
+  </nav>
+
+  <main id="view" aria-live="polite">
+    <!-- Modules render here. Chords is the MVP; the rest are stubs for now. -->
+  </main>
+
+  <footer class="statusbar">
+    <span id="status">ready</span>
+  </footer>
+
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

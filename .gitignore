@@ -1,10 +1,16 @@
 # OS
 .DS_Store
 
-# Audio / project working files — keep the notes in git, not the big binaries.
-# Uncomment/adjust as your workflow settles.
-# *.wav
-# *.aiff
-# *.flac
-# *.logicx/
-# *.als
+# Audio / project working files — keep the notes in git, not the big binaries (PRD §2).
+/audio/          # local working dir for takes; referenced from notes by path, never committed
+*.wav
+*.aiff
+*.flac
+*.logicx/
+*.als
+
+# Python / uv (the local web app)
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
