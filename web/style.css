@@ -63,3 +63,40 @@ code { background: var(--panel); padding: 0.05rem 0.3rem; border-radius: 4px; }
   color: var(--muted);
   font-size: 0.8rem;
 }
+
+/* --- Chords module --- */
+.row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin: 0.75rem 0; }
+.key-row label { display: flex; gap: 0.4rem; align-items: center; color: var(--muted); }
+
+select, input[type="text"], button {
+  font: inherit;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+}
+input[type="text"] { flex: 1; min-width: 12rem; }
+button { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+
+.palette { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  background: var(--panel);
+}
+.chip.add { color: var(--accent); }
+
+.progression { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.progression .empty { border: none; background: none; padding: 0.3rem 0; }
+.chip.prog .sym { font-weight: 600; }
+.chip.prog.is-invalid { border-color: #c96f6f; color: #e0a0a0; }
+.chip .ops { display: inline-flex; gap: 0.1rem; }
+.chip .ops button { padding: 0.05rem 0.4rem; border-color: transparent; background: transparent; color: var(--muted); }
+.chip .ops button:hover { color: var(--ink); border-color: transparent; }

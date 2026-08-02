@@ -34,17 +34,17 @@ Convention: one task = one small, verifiable change. Keep them that size.
 ## Group C — Front-end shell
 
 - [x] Static `index.html` with a module nav (Chords active; Studio/Tabs/Effects stubbed).
-- [ ] Vendor `tonal.js` as an ES module (pinned version, no bundler).
+- [x] Vendor `tonal.js` as an ES module (pinned version, no bundler). *(v6.4.0, self-contained bundle)*
 - [x] Base stylesheet — clean, legible, benten-flavored; mobile-friendly width.
-- [ ] A small fetch wrapper for the backend JSON API.
+- [x] A small fetch wrapper for the backend JSON API. *(`web/lib/api.js`)*
 
 ## Group D — Chord entry (MVP)
 
-- [ ] Key selector (root + major/minor) that seeds the palette.
-- [ ] In-key chord palette: click a diatonic chord to append it to the progression.
-- [ ] Free-text chord input parsing symbols (`Am7`, `D9`, `Cmaj7`) via `tonal.js`.
-- [ ] Progression editor: ordered list of chords, reorderable and removable.
-- [ ] Handle unparseable / out-of-key chords gracefully (flag, don't crash).
+- [x] Key selector (root + major/minor) that seeds the palette.
+- [x] In-key chord palette: click a diatonic chord to append it to the progression.
+- [x] Free-text chord input parsing symbols (`Am7`, `D9`, `Cmaj7`) via `tonal.js`.
+- [x] Progression editor: ordered list of chords, reorderable and removable.
+- [x] Handle unparseable / out-of-key chords gracefully (flag, don't crash).
 
 ## Group E — Chord-scale suggestions (MVP)
 
