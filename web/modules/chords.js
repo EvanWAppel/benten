@@ -6,6 +6,7 @@ import { analyzeProgression } from "./theory.js";
 import { fretboardSVG } from "./fretboard.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
+import { playChord, ProgressionPlayer } from "./audio.js";
 
 const TONICS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -14,10 +15,17 @@ const state = {
   mode: "major", // "major" | "minor"
   progression: [], // chord symbols, in order
   active: null, // { scale, chordSymbol } currently shown on the fretboard
+  // practice-loop settings
+  tempo: 90,
+  beatsPerBar: 4,
+  barsPerChord: 1,
+  countIn: true,
+  metronome: true,
 };
 
 let root;
 let onStatus = () => {};
+let player = null; // the running ProgressionPlayer, if any (survives re-renders)
 
 export function mount(container, { setStatus } = {}) {
   root = container;
@@ -77,11 +85,39 @@ function render() {
         }
       </ol>
 
+      ${state.progression.length ? renderPractice() : ""}
       ${state.progression.length ? renderSuggestions() : ""}
       ${state.progression.length ? renderSave() : ""}
     </section>`;
 
   wire();
+}
+
+function renderPractice() {
+  const playing = !!player;
+  return `
+    <div class="practice">
+      <div class="row transport">
+        <button id="play-btn" type="button" class="${playing ? "is-playing" : ""}">
+          ${playing ? "◼ stop" : "▶ play loop"}
+        </button>
+        <label>tempo
+          <input id="tempo" type="number" min="40" max="240" step="1" value="${state.tempo}" /> bpm
+        </label>
+        <label>feel
+          <select id="beats">
+            <option value="4" ${state.beatsPerBar === 4 ? "selected" : ""}>4/4</option>
+            <option value="3" ${state.beatsPerBar === 3 ? "selected" : ""}>3/4</option>
+            <option value="6" ${state.beatsPerBar === 6 ? "selected" : ""}>6/8</option>
+          </select>
+        </label>
+        <label>bars/chord
+          <input id="bars" type="number" min="1" max="8" step="1" value="${state.barsPerChord}" />
+        </label>
+        <label class="check"><input id="countin" type="checkbox" ${state.countIn ? "checked" : ""}/> count-in</label>
+        <label class="check"><input id="metro" type="checkbox" ${state.metronome ? "checked" : ""}/> metronome</label>
+      </div>
+    </div>`;
 }
 
 function renderSave() {
@@ -159,6 +195,7 @@ function chordChip(sym, i) {
     <li class="chip prog ${invalid}" ${title}>
       <span class="sym">${sym}</span>
       <span class="ops">
+        ${isValid(sym) ? `<button data-hear="${sym}" aria-label="hear chord">♪</button>` : ""}
         <button data-move="${i}" data-dir="-1" aria-label="move left">‹</button>
         <button data-move="${i}" data-dir="1" aria-label="move right">›</button>
         <button data-remove="${i}" aria-label="remove">×</button>
@@ -213,6 +250,66 @@ function wire() {
   );
 
   root.querySelector("#save-btn")?.addEventListener("click", saveProgression);
+
+  // click-to-hear on a progression chip
+  root.querySelectorAll("[data-hear]").forEach((b) =>
+    b.addEventListener("click", () => playChord(b.dataset.hear)),
+  );
+
+  // practice-loop transport
+  root.querySelector("#play-btn")?.addEventListener("click", togglePlay);
+  root.querySelector("#tempo")?.addEventListener("change", (e) => {
+    state.tempo = clampInt(e.target.value, 40, 240, 90);
+  });
+  root.querySelector("#beats")?.addEventListener("change", (e) => {
+    state.beatsPerBar = Number(e.target.value);
+  });
+  root.querySelector("#bars")?.addEventListener("change", (e) => {
+    state.barsPerChord = clampInt(e.target.value, 1, 8, 1);
+  });
+  root.querySelector("#countin")?.addEventListener("change", (e) => {
+    state.countIn = e.target.checked;
+  });
+  root.querySelector("#metro")?.addEventListener("change", (e) => {
+    state.metronome = e.target.checked;
+  });
+}
+
+function clampInt(v, lo, hi, fallback) {
+  const n = parseInt(v, 10);
+  if (Number.isNaN(n)) return fallback;
+  return Math.min(hi, Math.max(lo, n));
+}
+
+function highlightPlaying(idx) {
+  root.querySelectorAll(".chip.prog").forEach((el, i) =>
+    el.classList.toggle("is-playing", i === idx),
+  );
+}
+
+function togglePlay() {
+  if (player) {
+    player.stop();
+    return;
+  }
+  player = new ProgressionPlayer({
+    progression: [...state.progression],
+    tempo: state.tempo,
+    beatsPerBar: state.beatsPerBar,
+    barsPerChord: state.barsPerChord,
+    countIn: state.countIn,
+    metronome: state.metronome,
+    onChord: (idx) => highlightPlaying(idx),
+    onStop: () => {
+      player = null;
+      highlightPlaying(-1);
+      onStatus("stopped");
+      render();
+    },
+  });
+  player.start();
+  onStatus("looping — solo over it");
+  render();
 }
 
 async function saveProgression() {
@@ -235,7 +332,12 @@ async function saveProgression() {
 
 function addChord(symbol) {
   state.progression.push(symbol);
-  onStatus(isValid(symbol) ? `added ${symbol}` : `added "${symbol}" — flagged, unrecognized`);
+  if (isValid(symbol)) {
+    onStatus(`added ${symbol}`);
+    playChord(symbol); // click-to-hear feedback
+  } else {
+    onStatus(`added "${symbol}" — flagged, unrecognized`);
+  }
   render();
 }
 

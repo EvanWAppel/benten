@@ -97,6 +97,7 @@ button:hover { border-color: var(--accent); }
 .progression .empty { border: none; background: none; padding: 0.3rem 0; }
 .chip.prog .sym { font-weight: 600; }
 .chip.prog.is-invalid { border-color: #c96f6f; color: #e0a0a0; }
+.chip.prog.is-playing { border-color: #e0b15a; box-shadow: 0 0 0 2px rgba(224,177,90,0.3); }
 .chip .ops { display: inline-flex; gap: 0.1rem; }
 .chip .ops button { padding: 0.05rem 0.4rem; border-color: transparent; background: transparent; color: var(--muted); }
 .chip .ops button:hover { color: var(--ink); border-color: transparent; }
@@ -138,6 +139,14 @@ button:hover { border-color: var(--accent); }
 .key-dot.fb-scale { background: #2f3b40; border: 1.5px solid var(--accent); }
 .key-dot.fb-chord { background: var(--accent); }
 .key-dot.fb-root { background: #e0b15a; }
+
+.practice { margin: 0.75rem 0 1rem; padding: 0.75rem; background: #10131a; border: 1px solid var(--line); border-radius: 8px; }
+.transport { gap: 0.75rem; margin: 0; }
+.transport label { display: flex; gap: 0.35rem; align-items: center; color: var(--muted); font-size: 0.9rem; }
+.transport label.check { gap: 0.3rem; }
+.transport input[type="number"] { width: 4rem; }
+#play-btn { color: var(--accent); font-weight: 600; }
+#play-btn.is-playing { background: #e0b15a; color: #201a10; border-color: #e0b15a; }
 
 .save-row { margin-top: 1.25rem; border-top: 1px solid var(--line); padding-top: 1rem; }
 #save-btn { color: var(--accent); border-color: var(--line); }
