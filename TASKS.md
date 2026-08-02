@@ -25,11 +25,11 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ## Group B — File layer (read/write the drawers)
 
-- [ ] `POST /compositions` — write a Markdown file into `composition/` from a payload.
-- [ ] Auto-name saved files (slug + date), never clobber an existing file.
+- [x] `POST /compositions` — write a Markdown file into `composition/` from a payload.
+- [x] Auto-name saved files (slug + date), never clobber an existing file.
 - [x] Resolve the drawer paths relative to the repo root, not the process CWD. *(done in `paths.py`)*
-- [ ] Sanitize/validate paths so writes can only land inside the repo's drawers.
-- [ ] Unit-test the file writer with an injected temp directory (no real FS writes).
+- [x] Sanitize/validate paths so writes can only land inside the repo's drawers.
+- [x] Unit-test the file writer with an injected temp directory (no real FS writes).
 
 ## Group C — Front-end shell
 
