@@ -1,29 +1,23 @@
 // benten front-end — no build step, plain ES modules.
-// Group A: the shell wiring only. The Chords module (entry, suggestions,
-// fretboard, save) arrives in Groups C–G.
+// The shell: health line + module nav. Chords is the only live module (MVP).
+
+import { getJSON } from "./lib/api.js";
+import { mount as mountChords } from "./modules/chords.js";
 
 const view = document.getElementById("view");
-const status = document.getElementById("status");
+const statusEl = document.getElementById("status");
+
+function setStatus(msg) {
+  statusEl.textContent = msg;
+}
 
 async function checkHealth() {
   try {
-    const res = await fetch("/health");
-    const body = await res.json();
-    status.textContent = `${body.app} v${body.version} · ${body.status}`;
-  } catch (err) {
-    status.textContent = "server unreachable";
+    const body = await getJSON("/health");
+    setStatus(`${body.app} v${body.version} · ${body.status}`);
+  } catch {
+    setStatus("server unreachable");
   }
-}
-
-function renderChordsPlaceholder() {
-  view.innerHTML = `
-    <section class="module-view">
-      <h2>Chords &amp; scales</h2>
-      <p class="muted">
-        Enter a progression, get the scales to play over it, see them on the neck,
-        and save it to <code>composition/</code>. Coming in Groups C&ndash;G.
-      </p>
-    </section>`;
 }
 
 const modules = document.querySelectorAll(".module");
@@ -32,10 +26,9 @@ modules.forEach((btn) => {
     if (btn.disabled) return;
     modules.forEach((b) => b.classList.remove("is-active"));
     btn.classList.add("is-active");
-    // Only Chords is real for now.
-    if (btn.dataset.module === "chords") renderChordsPlaceholder();
+    if (btn.dataset.module === "chords") mountChords(view, { setStatus });
   });
 });
 
-renderChordsPlaceholder();
+mountChords(view, { setStatus });
 checkHealth();

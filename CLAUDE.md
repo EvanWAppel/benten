@@ -48,7 +48,8 @@ slower than opening a file and typing was.
 ```
 uv sync                 # install (adds dev extras: uv sync --extra dev)
 uv run benten           # serve at http://127.0.0.1:8788
-uv run pytest           # the tests
+uv run pytest           # backend tests
+node --test jstests/theory.test.mjs   # front-end theory-logic tests (no deps; node built-in)
 ```
 
 Paths (web assets, drawers, the `audio/` working dir) resolve from the repo root

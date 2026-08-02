@@ -10,9 +10,11 @@ phone memos, and half-remembered practice sessions. Think of it as a luthier's
 bench rather than a textbook: raw wood, jigs, a drawer of offcuts you keep because
 one of them will turn out to be the neck of something later.
 
-Everything here is plain Markdown. No build, no framework, nothing to run — open a
-file, add to it, commit. The structure below is a set of drawers, not a syllabus;
-fill the ones you're using and ignore the rest until you need them.
+Everything here is plain Markdown — open a file, add to it, commit. The structure
+below is a set of drawers, not a syllabus; fill the ones you're using and ignore the
+rest until you need them. There's now also an optional local app (see
+[The app](#the-app-optional)) for the things a notebook can't do, but the drawers
+never depend on it.
 
 ## The drawers
 
@@ -29,6 +31,30 @@ Two logs sit at the root and cut across all of it:
 
 - [`practice-log.md`](./practice-log.md) — a running record of what I actually did, dated newest-first. The single most honest file in the repo.
 - Each instrument keeps its own `practice-log.md` too, for the detail that only makes sense in context.
+
+## The app (optional)
+
+The drawers work on their own — open a file and write, forever. But some things a
+notebook can't do: hear a chord, see a scale laid across the fretboard, catch a mic
+take. Those live in a small **local web app** that sits on top of these same drawers.
+It's optional by design; the bench never depends on it.
+
+Run it:
+
+```sh
+uv sync
+uv run benten        # http://127.0.0.1:8788
+```
+
+First module up is **Chords & scales**: pick a key, build a progression (click the
+in-key palette or type symbols like `Am7`, `D9`, `Cmaj7`), and get the scales that fit
+each chord and the whole thing — with the chords that step outside the key flagged.
+Click a scale to see it laid across a guitar fretboard, then save the result straight
+into `composition/` as plain Markdown. Nothing it writes is anything you couldn't have
+typed by hand — that's the rule.
+
+See [`PRD.md`](./PRD.md) for where it's headed — a practice looper, mic recording with
+overdub, tab search — and [`TASKS.md`](./TASKS.md) for the build.
 
 ## How to use it
 

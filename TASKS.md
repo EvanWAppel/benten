@@ -25,55 +25,55 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ## Group B — File layer (read/write the drawers)
 
-- [ ] `POST /compositions` — write a Markdown file into `composition/` from a payload.
-- [ ] Auto-name saved files (slug + date), never clobber an existing file.
+- [x] `POST /compositions` — write a Markdown file into `composition/` from a payload.
+- [x] Auto-name saved files (slug + date), never clobber an existing file.
 - [x] Resolve the drawer paths relative to the repo root, not the process CWD. *(done in `paths.py`)*
-- [ ] Sanitize/validate paths so writes can only land inside the repo's drawers.
-- [ ] Unit-test the file writer with an injected temp directory (no real FS writes).
+- [x] Sanitize/validate paths so writes can only land inside the repo's drawers.
+- [x] Unit-test the file writer with an injected temp directory (no real FS writes).
 
 ## Group C — Front-end shell
 
 - [x] Static `index.html` with a module nav (Chords active; Studio/Tabs/Effects stubbed).
-- [ ] Vendor `tonal.js` as an ES module (pinned version, no bundler).
+- [x] Vendor `tonal.js` as an ES module (pinned version, no bundler). *(v6.4.0, self-contained bundle)*
 - [x] Base stylesheet — clean, legible, benten-flavored; mobile-friendly width.
-- [ ] A small fetch wrapper for the backend JSON API.
+- [x] A small fetch wrapper for the backend JSON API. *(`web/lib/api.js`)*
 
 ## Group D — Chord entry (MVP)
 
-- [ ] Key selector (root + major/minor) that seeds the palette.
-- [ ] In-key chord palette: click a diatonic chord to append it to the progression.
-- [ ] Free-text chord input parsing symbols (`Am7`, `D9`, `Cmaj7`) via `tonal.js`.
-- [ ] Progression editor: ordered list of chords, reorderable and removable.
-- [ ] Handle unparseable / out-of-key chords gracefully (flag, don't crash).
+- [x] Key selector (root + major/minor) that seeds the palette.
+- [x] In-key chord palette: click a diatonic chord to append it to the progression.
+- [x] Free-text chord input parsing symbols (`Am7`, `D9`, `Cmaj7`) via `tonal.js`.
+- [x] Progression editor: ordered list of chords, reorderable and removable.
+- [x] Handle unparseable / out-of-key chords gracefully (flag, don't crash).
 
 ## Group E — Chord-scale suggestions (MVP)
 
-- [ ] Per-chord: compute fitting scale(s)/mode(s) (diatonic + obvious modal choice).
-- [ ] Whole-progression: compute the parent scale(s) covering the progression.
-- [ ] Flag chords that fall outside the detected key (the "outside" spots).
-- [ ] Render suggestions per chord and a summary for the whole progression.
-- [ ] Unit-test the suggestion logic against a few known progressions (ii-V-I, etc.).
+- [x] Per-chord: compute fitting scale(s)/mode(s) (diatonic + obvious modal choice).
+- [x] Whole-progression: compute the parent scale(s) covering the progression.
+- [x] Flag chords that fall outside the detected key (the "outside" spots).
+- [x] Render suggestions per chord and a summary for the whole progression.
+- [x] Unit-test the suggestion logic against a few known progressions (ii-V-I, etc.). *(`node --test jstests/`)*
 
 ## Group F — Guitar fretboard (MVP)
 
-- [ ] Render a standard-tuning guitar fretboard (SVG or canvas), tuning-agnostic core.
-- [ ] Plot a given scale's notes across the neck.
-- [ ] Highlight chord tones vs. the rest of the scale distinctly.
-- [ ] Toggle which suggested scale is shown on the neck.
-- [ ] Label notes / degrees on the diagram.
+- [x] Render a standard-tuning guitar fretboard (SVG or canvas), tuning-agnostic core.
+- [x] Plot a given scale's notes across the neck.
+- [x] Highlight chord tones vs. the rest of the scale distinctly.
+- [x] Toggle which suggested scale is shown on the neck.
+- [x] Label notes / degrees on the diagram. *(note names; degree toggle deferred)*
 
 ## Group G — Save to composition/ (MVP)
 
-- [ ] Render the progression + scale suggestions as clean, hand-editable Markdown.
-- [ ] "Save" button POSTs to the file layer and confirms the written path.
-- [ ] Include an auto-link back into the drawer structure so it reads like a note.
-- [ ] Verify a saved file opens correctly as plain Markdown outside the app.
+- [x] Render the progression + scale suggestions as clean, hand-editable Markdown.
+- [x] "Save" button POSTs to the file layer and confirms the written path.
+- [x] Include an auto-link back into the drawer structure so it reads like a note.
+- [x] Verify a saved file opens correctly as plain Markdown outside the app.
 
 ## Group H — MVP polish & acceptance
 
-- [ ] Walk the PRD §4.4 acceptance flow end-to-end with a real progression.
-- [ ] README section: how to run benten and what the Chords module does.
-- [ ] Log the first real use in `practice-log.md` (dogfood it).
+- [x] Walk the PRD §4.4 acceptance flow end-to-end with a real progression. *(browser-verified: entry → scales → fretboard → save to composition/)*
+- [x] README section: how to run benten and what the Chords module does.
+- [ ] Log the first real use in `practice-log.md` (dogfood it). *(Evan's to write — a real session, not fabricated)*
 
 ---
 
