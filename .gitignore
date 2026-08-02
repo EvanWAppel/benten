@@ -1,0 +1,10 @@
+# OS
+.DS_Store
+
+# Audio / project working files — keep the notes in git, not the big binaries.
+# Uncomment/adjust as your workflow settles.
+# *.wav
+# *.aiff
+# *.flac
+# *.logicx/
+# *.als
