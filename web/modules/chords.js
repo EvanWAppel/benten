@@ -2,6 +2,7 @@
 // Suggestions (Group E), fretboard (Group F), and save (Group G) come next.
 
 import { Key, Chord } from "../vendor/tonal.js";
+import { analyzeProgression } from "./theory.js";
 
 const TONICS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -71,9 +72,40 @@ function render() {
             : state.progression.map(chordChip).join("")
         }
       </ol>
+
+      ${state.progression.length ? renderSuggestions() : ""}
     </section>`;
 
   wire();
+}
+
+function renderSuggestions() {
+  const a = analyzeProgression(state.progression, state.tonic, state.mode);
+  const summary = a.allDiatonic
+    ? `Parent scale: <strong>${a.parent}</strong> — covers the whole progression.`
+    : `Parent scale: <strong>${a.parent}</strong>. Outside the key: ` +
+      (a.outside.length
+        ? a.outside.map((s) => `<span class="out">${s}</span>`).join(", ")
+        : "—") +
+      ".";
+
+  const rows = a.perChord
+    .filter((c) => c.valid)
+    .map(
+      (c) => `
+      <li>
+        <span class="sym">${c.symbol}</span>
+        <span class="arrow">→</span>
+        <span class="scales">${c.scales.join(" · ")}</span>
+        ${c.inKey ? "" : `<span class="tag">outside</span>`}
+      </li>`,
+    )
+    .join("");
+
+  return `
+    <h3>Scales to play over it</h3>
+    <p class="summary muted">${summary}</p>
+    <ul class="suggestions">${rows || `<li class="muted">no recognized chords yet</li>`}</ul>`;
 }
 
 function chordChip(sym, i) {

@@ -48,11 +48,11 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ## Group E — Chord-scale suggestions (MVP)
 
-- [ ] Per-chord: compute fitting scale(s)/mode(s) (diatonic + obvious modal choice).
-- [ ] Whole-progression: compute the parent scale(s) covering the progression.
-- [ ] Flag chords that fall outside the detected key (the "outside" spots).
-- [ ] Render suggestions per chord and a summary for the whole progression.
-- [ ] Unit-test the suggestion logic against a few known progressions (ii-V-I, etc.).
+- [x] Per-chord: compute fitting scale(s)/mode(s) (diatonic + obvious modal choice).
+- [x] Whole-progression: compute the parent scale(s) covering the progression.
+- [x] Flag chords that fall outside the detected key (the "outside" spots).
+- [x] Render suggestions per chord and a summary for the whole progression.
+- [x] Unit-test the suggestion logic against a few known progressions (ii-V-I, etc.). *(`node --test jstests/`)*
 
 ## Group F — Guitar fretboard (MVP)
 

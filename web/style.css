@@ -100,3 +100,12 @@ button:hover { border-color: var(--accent); }
 .chip .ops { display: inline-flex; gap: 0.1rem; }
 .chip .ops button { padding: 0.05rem 0.4rem; border-color: transparent; background: transparent; color: var(--muted); }
 .chip .ops button:hover { color: var(--ink); border-color: transparent; }
+
+.summary { margin: 0.5rem 0; }
+.summary .out { color: #e0a0a0; font-weight: 600; }
+.suggestions { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.suggestions li { display: flex; align-items: center; gap: 0.5rem; }
+.suggestions .sym { font-weight: 600; min-width: 4rem; }
+.suggestions .arrow { color: var(--muted); }
+.suggestions .scales { color: var(--accent); }
+.suggestions .tag { font-size: 0.7rem; color: #e0a0a0; border: 1px solid #c96f6f; border-radius: 999px; padding: 0 0.4rem; }
