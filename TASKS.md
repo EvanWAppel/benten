@@ -77,13 +77,13 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ---
 
-## Phase 1.5 — Chords, audible (deferred detail)
+## Phase 1.5 — Chords, audible
 
-- [ ] Web Audio setup: a shared audio context and a simple sampled/synth voice.
-- [ ] Click-to-hear: play a chord or a single note on click.
-- [ ] Practice loop: play the progression on a pad/piano, looped.
-- [ ] Metronome with adjustable tempo and time signature.
-- [ ] Count-in and loop controls (start/stop, bars per chord).
+- [x] Web Audio setup: a shared audio context and a simple sampled/synth voice.
+- [x] Click-to-hear: play a chord or a single note on click. *(palette add + ♪ button per chip)*
+- [x] Practice loop: play the progression on a pad/piano, looped. *(look-ahead scheduler; chord highlight advances)*
+- [x] Metronome with adjustable tempo and time signature. *(tempo bpm + 4/4·3/4·6/8 feel)*
+- [x] Count-in and loop controls (start/stop, bars per chord).
 
 ## Phase 2 — Studio (deferred detail)
 
