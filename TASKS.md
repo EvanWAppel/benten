@@ -64,10 +64,10 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ## Group G — Save to composition/ (MVP)
 
-- [ ] Render the progression + scale suggestions as clean, hand-editable Markdown.
-- [ ] "Save" button POSTs to the file layer and confirms the written path.
-- [ ] Include an auto-link back into the drawer structure so it reads like a note.
-- [ ] Verify a saved file opens correctly as plain Markdown outside the app.
+- [x] Render the progression + scale suggestions as clean, hand-editable Markdown.
+- [x] "Save" button POSTs to the file layer and confirms the written path.
+- [x] Include an auto-link back into the drawer structure so it reads like a note.
+- [x] Verify a saved file opens correctly as plain Markdown outside the app.
 
 ## Group H — MVP polish & acceptance
 

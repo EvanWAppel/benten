@@ -4,6 +4,8 @@
 import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
 import { fretboardSVG } from "./fretboard.js";
+import { progressionMarkdown } from "./compose.js";
+import { postJSON } from "../lib/api.js";
 
 const TONICS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -76,9 +78,19 @@ function render() {
       </ol>
 
       ${state.progression.length ? renderSuggestions() : ""}
+      ${state.progression.length ? renderSave() : ""}
     </section>`;
 
   wire();
+}
+
+function renderSave() {
+  return `
+    <div class="save-row row">
+      <input id="title" type="text" autocomplete="off"
+             placeholder="name this progression (optional)" />
+      <button id="save-btn" type="button">save to composition/</button>
+    </div>`;
 }
 
 function renderSuggestions() {
@@ -199,6 +211,26 @@ function wire() {
       render();
     }),
   );
+
+  root.querySelector("#save-btn")?.addEventListener("click", saveProgression);
+}
+
+async function saveProgression() {
+  const title = root.querySelector("#title")?.value.trim() || "Untitled progression";
+  const body = progressionMarkdown({
+    title,
+    tonic: state.tonic,
+    mode: state.mode,
+    progression: state.progression,
+    date: new Date().toISOString().slice(0, 10),
+  });
+  onStatus("saving…");
+  try {
+    const res = await postJSON("/compositions", { title, body });
+    onStatus(`saved → ${res.path}`);
+  } catch (e) {
+    onStatus(`save failed: ${e.message}`);
+  }
 }
 
 function addChord(symbol) {

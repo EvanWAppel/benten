@@ -138,3 +138,7 @@ button:hover { border-color: var(--accent); }
 .key-dot.fb-scale { background: #2f3b40; border: 1.5px solid var(--accent); }
 .key-dot.fb-chord { background: var(--accent); }
 .key-dot.fb-root { background: #e0b15a; }
+
+.save-row { margin-top: 1.25rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+#save-btn { color: var(--accent); border-color: var(--line); }
+#save-btn:hover { background: var(--accent); color: #10242a; }
