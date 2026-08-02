@@ -71,9 +71,9 @@ Convention: one task = one small, verifiable change. Keep them that size.
 
 ## Group H — MVP polish & acceptance
 
-- [ ] Walk the PRD §4.4 acceptance flow end-to-end with a real progression.
-- [ ] README section: how to run benten and what the Chords module does.
-- [ ] Log the first real use in `practice-log.md` (dogfood it).
+- [x] Walk the PRD §4.4 acceptance flow end-to-end with a real progression. *(browser-verified: entry → scales → fretboard → save to composition/)*
+- [x] README section: how to run benten and what the Chords module does.
+- [ ] Log the first real use in `practice-log.md` (dogfood it). *(Evan's to write — a real session, not fabricated)*
 
 ---
 
