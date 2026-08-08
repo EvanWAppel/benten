@@ -151,3 +151,27 @@ button:hover { border-color: var(--accent); }
 .save-row { margin-top: 1.25rem; border-top: 1px solid var(--line); padding-top: 1rem; }
 #save-btn { color: var(--accent); border-color: var(--line); }
 #save-btn:hover { background: var(--accent); color: #10242a; }
+
+/* --- Studio module --- */
+.studio .mic-row label { display: flex; gap: 0.4rem; align-items: center; color: var(--muted); }
+#mic-btn { color: var(--accent); }
+#mic-btn.is-open { background: var(--accent); color: #10242a; border-color: var(--accent); }
+.mic-error { color: #e0a0a0; border: 1px solid #c96f6f; border-radius: 6px; padding: 0.5rem 0.75rem; }
+
+.meter-wrap { display: flex; align-items: center; gap: 0.6rem; margin: 0.75rem 0; }
+.meter { flex: 1; height: 12px; background: #10131a; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.meter-fill { height: 100%; width: 0; background: var(--accent); transition: width 0.05s linear; }
+.meter-fill.is-hot { background: #e0705a; }
+.meter-label { color: var(--muted); font-size: 0.8rem; min-width: 3rem; }
+
+.studio-transport { margin: 0.5rem 0; }
+#rec-btn { color: #e0705a; font-weight: 600; }
+#rec-btn.is-recording { background: #e0705a; color: #201010; border-color: #e0705a; }
+#rec-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.take { margin-top: 1rem; padding: 0.75rem; background: #10131a; border: 1px solid var(--line); border-radius: 8px; }
+.take h3 { margin: 0 0 0.5rem; font-weight: 600; }
+.take audio { width: 100%; margin: 0.25rem 0; }
+.take .saved { margin: 0.4rem 0 0; }
+#save-take { color: var(--accent); border-color: var(--line); }
+#save-take:hover { background: var(--accent); color: #10242a; }

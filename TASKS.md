@@ -103,18 +103,18 @@ a session note touch the backend. Grouped like Phase 1: backend/storage first
 
 ### Group T — Mic & level meter (front-end)
 
-- [ ] Studio module scaffold; enable the `Studio` nav button and mount it.
-- [ ] `getUserMedia` mic access with a device picker (`enumerateDevices`).
-- [ ] Live input level meter from an `AnalyserNode` (peak/RMS).
-- [ ] Graceful states: permission denied, no device, not-secure-context.
+- [x] Studio module scaffold; enable the `Studio` nav button and mount it.
+- [x] `getUserMedia` mic access with a device picker (`enumerateDevices`).
+- [x] Live input level meter from an `AnalyserNode` (peak/RMS).
+- [x] Graceful states: permission denied, no device, not-secure-context.
 
 ### Group U — Record a take
 
-- [ ] PCM capture path: tap the mic through Web Audio and buffer Float32 samples.
-- [ ] Encode buffered PCM to a 16-bit WAV blob client-side (no lossy intermediate).
-- [ ] Transport: arm → record → stop; POST the WAV to `/takes`; show saved path.
-- [ ] Play the just-recorded take back in the browser.
-- [ ] Unit-test the WAV encoder (header fields + sample count) with `node --test`.
+- [x] PCM capture path: tap the mic through Web Audio and buffer Float32 samples. *(AudioWorklet)*
+- [x] Encode buffered PCM to a 16-bit WAV blob client-side (no lossy intermediate).
+- [x] Transport: arm → record → stop; POST the WAV to `/takes`; show saved path.
+- [x] Play the just-recorded take back in the browser.
+- [x] Unit-test the WAV encoder (header fields + sample count) with `node --test`. *(5 tests)*
 
 ### Group V — Backing track & overdub
 
