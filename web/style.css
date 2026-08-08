@@ -169,9 +169,23 @@ button:hover { border-color: var(--accent); }
 #rec-btn.is-recording { background: #e0705a; color: #201010; border-color: #e0705a; }
 #rec-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.take { margin-top: 1rem; padding: 0.75rem; background: #10131a; border: 1px solid var(--line); border-radius: 8px; }
-.take h3 { margin: 0 0 0.5rem; font-weight: 600; }
+.studio-transport .latency { display: flex; gap: 0.35rem; align-items: center; color: var(--muted); font-size: 0.9rem; }
+.studio-transport .latency input { width: 4rem; }
+.overdub-tag { color: #e0b15a; font-size: 0.85rem; }
+
+.takes { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.take { padding: 0.75rem; background: #10131a; border: 1px solid var(--line); border-radius: 8px; }
+.take.is-backing { border-color: #e0b15a; }
+.take-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.role-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 0.05rem 0.5rem; }
+.take-name { flex: 1; }
+.take .dur { font-size: 0.85rem; }
 .take audio { width: 100%; margin: 0.25rem 0; }
-.take .saved { margin: 0.4rem 0 0; }
-#save-take { color: var(--accent); border-color: var(--line); }
-#save-take:hover { background: var(--accent); color: #10242a; }
+.take-ops { margin: 0.4rem 0 0; gap: 0.4rem; }
+.take-ops .saved { margin: 0; }
+.backing-btn { color: #e0b15a; border-color: var(--line); }
+.backing-btn.is-on { background: #e0b15a; color: #201a10; border-color: #e0b15a; }
+.save-take { color: var(--accent); border-color: var(--line); }
+.save-take:hover { background: var(--accent); color: #10242a; }
+.drop-take { color: var(--muted); border-color: transparent; }
+.drop-take:hover { color: #e0a0a0; border-color: transparent; }

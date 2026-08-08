@@ -36,6 +36,11 @@ export class MicRecorder {
     this.recording = false;
   }
 
+  // The capture sample rate (the mic's AudioContext), or a sane default.
+  get sampleRate() {
+    return this.ctx?.sampleRate ?? 48000;
+  }
+
   // Open the mic and wire the metering + capture graph. Idempotent per device.
   async open(deviceId) {
     if (!micSupported()) throw new Error("mic unavailable (needs a secure context)");
@@ -105,24 +110,27 @@ export class MicRecorder {
   }
 
   // Stop capture and return the take as { wav: Blob, samples, sampleRate, duration }.
-  stop() {
+  // `trimStartSamples` drops that many samples off the front before encoding — the
+  // latency-compensation offset for an overdub, so it lands in time with the backing.
+  stop({ trimStartSamples = 0 } = {}) {
     this.recording = false;
     this.worklet?.port.postMessage("stop");
 
     const total = this._chunks.reduce((n, c) => n + c.length, 0);
-    const samples = new Float32Array(total);
+    const all = new Float32Array(total);
     let offset = 0;
     for (const c of this._chunks) {
-      samples.set(c, offset);
+      all.set(c, offset);
       offset += c.length;
     }
     this._chunks = [];
 
-    const sampleRate = this.ctx?.sampleRate ?? 48000;
+    const samples = trimStartSamples > 0 ? all.subarray(trimStartSamples) : all;
+    const sampleRate = this.sampleRate;
     const wav = new Blob([encodeWAV(samples, { sampleRate, channels: 1 })], {
       type: "audio/wav",
     });
-    return { wav, samples, sampleRate, duration: total / sampleRate };
+    return { wav, samples, sampleRate, duration: samples.length / sampleRate };
   }
 
   // Decode a WAV/blob back into an AudioBuffer for looping as a backing track.

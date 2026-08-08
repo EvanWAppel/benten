@@ -1,7 +1,8 @@
 // The Studio module — record → (overdub) → play back, all client-side audio.
-// Groups T (mic access, device picker, level meter) and U (record a WAV take,
-// save it to the git-ignored audio/ dir, play it back). Overdub + session notes
-// come next. The Web Audio plumbing lives in recorder.js; this is the UI over it.
+// Groups T (mic, device picker, level meter), U (record a WAV take, save it to the
+// git-ignored audio/ dir, play it back), and V (loop a take as a backing track,
+// overdub a lead over it, with a latency offset so the overdub lands in time).
+// Session notes come next. The Web Audio plumbing lives in recorder.js.
 
 import { MicRecorder, listInputDevices, micSupported } from "./recorder.js";
 import { postBlob } from "../lib/api.js";
@@ -13,13 +14,17 @@ const state = {
   micOpen: false,
   recording: false,
   error: "",
-  lastTake: null, // { url, duration, name, savedPath }
+  takes: [], // { id, blob, url, duration, name, role, savedPath, _buffer }
+  backingId: null, // take looped underneath while overdubbing, or null
+  latencyMs: 0, // overdub calibration — trimmed off the front of an overdub
+  _seq: 0,
 };
 
 let root;
 let onStatus = () => {};
 const rec = new MicRecorder();
 let meterRAF = null;
+let backingSrc = null; // the playing backing source during an overdub
 
 export function mount(container, { setStatus } = {}) {
   root = container;
@@ -45,11 +50,13 @@ function render() {
     return;
   }
 
+  const overdubbing = state.backingId != null;
   root.innerHTML = `
     <section class="module-view studio">
       <h2>Studio</h2>
-      <p class="muted">Catch a take. Audio stays local — it lands in the git-ignored
-        <code>audio/</code> dir, referenced from your notes by path.</p>
+      <p class="muted">Catch a take, loop it, and jam over yourself. Audio stays
+        local — it lands in the git-ignored <code>audio/</code> dir, referenced from
+        your notes by path.</p>
 
       <div class="row mic-row">
         <label>input
@@ -82,30 +89,52 @@ function render() {
         <button id="rec-btn" type="button"
                 class="${state.recording ? "is-recording" : ""}"
                 ${state.micOpen ? "" : "disabled"}>
-          ${state.recording ? "◼ stop" : "● record"}
+          ${state.recording ? "◼ stop" : overdubbing ? "● overdub" : "● record"}
         </button>
+        ${overdubbing ? `<span class="overdub-tag">over ${backingName()}</span>` : ""}
+        <label class="latency" title="shift the overdub earlier to compensate for round-trip latency">
+          latency
+          <input id="latency" type="number" min="0" max="500" step="5" value="${state.latencyMs}" /> ms
+        </label>
       </div>
 
-      ${state.lastTake ? renderLastTake() : ""}
+      ${state.takes.length ? renderTakes() : `<p class="muted hint">No takes yet — enable the mic and record one.</p>`}
     </section>`;
 
   wire();
   if (state.micOpen) startMeter();
 }
 
-function renderLastTake() {
-  const t = state.lastTake;
-  return `
-    <div class="take">
-      <h3>Last take <span class="muted">· ${t.duration.toFixed(1)}s</span></h3>
-      <audio controls src="${t.url}"></audio>
-      <div class="save-row row">
-        <input id="take-name" type="text" autocomplete="off"
-               placeholder="name this take (optional)" value="${t.name || ""}" />
-        <button id="save-take" type="button">save to audio/</button>
-      </div>
-      ${t.savedPath ? `<p class="muted saved">saved → <code>${t.savedPath}</code></p>` : ""}
-    </div>`;
+function backingName() {
+  const t = state.takes.find((x) => x.id === state.backingId);
+  return t ? t.name || t.role : "—";
+}
+
+function renderTakes() {
+  const rows = state.takes
+    .map((t) => {
+      const isBacking = t.id === state.backingId;
+      return `
+      <li class="take ${isBacking ? "is-backing" : ""}">
+        <div class="take-head">
+          <span class="role-tag">${t.role}</span>
+          <input class="take-name" data-name="${t.id}" type="text" autocomplete="off"
+                 placeholder="name this take" value="${t.name || ""}" />
+          <span class="muted dur">${t.duration.toFixed(1)}s</span>
+        </div>
+        <audio controls src="${t.url}"></audio>
+        <div class="take-ops row">
+          <button class="backing-btn ${isBacking ? "is-on" : ""}" data-backing="${t.id}" type="button">
+            ${isBacking ? "◼ backing" : "loop as backing"}
+          </button>
+          <button class="save-take" data-save="${t.id}" type="button">save to audio/</button>
+          <button class="drop-take" data-drop="${t.id}" type="button" aria-label="discard take">discard</button>
+          ${t.savedPath ? `<span class="muted saved">saved → <code>${t.savedPath}</code></span>` : ""}
+        </div>
+      </li>`;
+    })
+    .join("");
+  return `<h3>Session takes</h3><ul class="takes">${rows}</ul>`;
 }
 
 // --- level meter ----------------------------------------------------------
@@ -135,13 +164,33 @@ function wire() {
   root.querySelector("#mic-btn")?.addEventListener("click", toggleMic);
   root.querySelector("#device")?.addEventListener("change", (e) => {
     state.deviceId = e.target.value;
-    if (state.micOpen) openMic(); // reopen on the newly chosen device
+    if (state.micOpen) openMic();
   });
   root.querySelector("#rec-btn")?.addEventListener("click", toggleRecord);
-  root.querySelector("#save-take")?.addEventListener("click", saveTake);
-  root.querySelector("#take-name")?.addEventListener("input", (e) => {
-    if (state.lastTake) state.lastTake.name = e.target.value;
+  root.querySelector("#latency")?.addEventListener("change", (e) => {
+    const n = parseInt(e.target.value, 10);
+    state.latencyMs = Number.isNaN(n) ? 0 : Math.min(500, Math.max(0, n));
   });
+
+  root.querySelectorAll("[data-name]").forEach((el) =>
+    el.addEventListener("input", (e) => {
+      const t = takeById(el.dataset.name);
+      if (t) t.name = e.target.value;
+    }),
+  );
+  root.querySelectorAll("[data-backing]").forEach((b) =>
+    b.addEventListener("click", () => toggleBacking(b.dataset.backing)),
+  );
+  root.querySelectorAll("[data-save]").forEach((b) =>
+    b.addEventListener("click", () => saveTake(b.dataset.save)),
+  );
+  root.querySelectorAll("[data-drop]").forEach((b) =>
+    b.addEventListener("click", () => dropTake(b.dataset.drop)),
+  );
+}
+
+function takeById(id) {
+  return state.takes.find((t) => t.id === id);
 }
 
 async function toggleMic() {
@@ -161,7 +210,6 @@ async function openMic() {
   try {
     await rec.open(state.deviceId || undefined);
     state.micOpen = true;
-    // Labels only populate after permission — refresh the device list now.
     state.devices = await listInputDevices();
     if (!state.deviceId && state.devices[0]) state.deviceId = state.devices[0].deviceId;
     onStatus("mic on — arm and record");
@@ -179,40 +227,77 @@ function micErrorMessage(e) {
   return `Couldn't open the mic: ${e?.message || e}`;
 }
 
-function toggleRecord() {
-  if (state.recording) {
-    const take = rec.stop();
-    state.recording = false;
-    if (state.lastTake?.url) URL.revokeObjectURL(state.lastTake.url);
-    state.lastTake = {
-      blob: take.wav,
-      url: URL.createObjectURL(take.wav),
-      duration: take.duration,
-      name: "",
-      savedPath: null,
-    };
-    onStatus(`take captured — ${take.duration.toFixed(1)}s`);
-    render();
-    return;
+async function toggleRecord() {
+  if (state.recording) return stopRecord();
+
+  const backing = takeById(state.backingId);
+  let buffer = null;
+  if (backing) {
+    onStatus("cueing backing…");
+    buffer = backing._buffer ??= await rec.decode(backing.blob);
   }
   state.recording = true;
-  rec.start();
-  onStatus("recording…");
+  backingSrc = rec.start({ backing: buffer });
+  onStatus(backing ? "overdubbing — play over it" : "recording…");
   render();
 }
 
-async function saveTake() {
-  if (!state.lastTake) return;
-  const name = state.lastTake.name?.trim() || "take";
+function stopRecord() {
+  const overdub = state.backingId != null;
+  const trimStartSamples = overdub ? Math.round((state.latencyMs / 1000) * rec.sampleRate) : 0;
+  const take = rec.stop({ trimStartSamples });
+
+  if (backingSrc) {
+    try {
+      backingSrc.stop();
+    } catch {
+      /* already stopped */
+    }
+    backingSrc = null;
+  }
+
+  state.recording = false;
+  state.takes.push({
+    id: `t${++state._seq}`,
+    blob: take.wav,
+    url: URL.createObjectURL(take.wav),
+    duration: take.duration,
+    name: "",
+    role: overdub ? "lead" : "rhythm",
+    savedPath: null,
+    _buffer: null,
+  });
+  onStatus(`take captured — ${take.duration.toFixed(1)}s`);
+  render();
+}
+
+function toggleBacking(id) {
+  state.backingId = state.backingId === id ? null : id;
+  onStatus(state.backingId ? "backing set — record to overdub" : "backing cleared");
+  render();
+}
+
+async function saveTake(id) {
+  const t = takeById(id);
+  if (!t) return;
+  const name = t.name?.trim() || t.role;
   onStatus("saving take…");
   try {
-    const res = await postBlob("/takes", state.lastTake.blob, { name, ext: ".wav" });
-    state.lastTake.savedPath = res.path;
+    const res = await postBlob("/takes", t.blob, { name, ext: ".wav" });
+    t.savedPath = res.path;
     onStatus(`saved → ${res.path}`);
     render();
   } catch (e) {
     onStatus(`save failed: ${e.message}`);
   }
+}
+
+function dropTake(id) {
+  const t = takeById(id);
+  if (t?.url) URL.revokeObjectURL(t.url);
+  state.takes = state.takes.filter((x) => x.id !== id);
+  if (state.backingId === id) state.backingId = null;
+  render();
 }
 
 // Exposed for future groups/tests.

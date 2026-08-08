@@ -118,10 +118,10 @@ a session note touch the backend. Grouped like Phase 1: backend/storage first
 
 ### Group V — Backing track & overdub
 
-- [ ] Loop a recorded take as a backing track (gapless).
-- [ ] Overdub: record a new take while the backing track plays — "jam with myself."
-- [ ] Latency offset/calibration so overdubs land in time (PRD §8 risk).
-- [ ] Keep the take list in the session (name, duration, role: rhythm/lead).
+- [x] Loop a recorded take as a backing track (gapless). *(looped AudioBufferSource)*
+- [x] Overdub: record a new take while the backing track plays — "jam with myself."
+- [x] Latency offset/calibration so overdubs land in time (PRD §8 risk). *(front-trim in ms)*
+- [x] Keep the take list in the session (name, duration, role: rhythm/lead).
 
 ### Group W — Session note & capture
 
