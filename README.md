@@ -51,10 +51,20 @@ in-key palette or type symbols like `Am7`, `D9`, `Cmaj7`), and get the scales th
 each chord and the whole thing — with the chords that step outside the key flagged.
 Click a scale to see it laid across a guitar fretboard, then save the result straight
 into `composition/` as plain Markdown. Nothing it writes is anything you couldn't have
-typed by hand — that's the rule.
+typed by hand — that's the rule. It plays, too: click a chord to hear it, or loop the
+whole progression against a metronome and solo over it.
 
-See [`PRD.md`](./PRD.md) for where it's headed — a practice looper, mic recording with
-overdub, tab search — and [`TASKS.md`](./TASKS.md) for the build.
+The **Studio** module is where a take gets caught. Enable the mic, pick your input,
+and record — the take lands as a plain WAV in a local, git-ignored `audio/` folder,
+never committed, only referenced from your notes by path. Loop any take as a backing
+track and overdub a lead over it — jam with yourself — with a latency offset to nudge
+the overdub back into time. When you're done, write a session note straight into
+`recording/sessions/` with the take list attached, and send any keeper to the
+[`riffs/`](./riffs) drawer. Serious mixing still belongs in your DAW; this is the bench
+where the performance becomes a fact.
+
+See [`PRD.md`](./PRD.md) for where it's headed — tab search, then a custom effects
+chain — and [`TASKS.md`](./TASKS.md) for the build.
 
 ## How to use it
 
