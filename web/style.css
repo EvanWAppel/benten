@@ -187,5 +187,17 @@ button:hover { border-color: var(--accent); }
 .backing-btn.is-on { background: #e0b15a; color: #201a10; border-color: #e0b15a; }
 .save-take { color: var(--accent); border-color: var(--line); }
 .save-take:hover { background: var(--accent); color: #10242a; }
+.riff-take { color: #e0b15a; border-color: var(--line); }
+.riff-take:hover { background: #e0b15a; color: #201a10; }
 .drop-take { color: var(--muted); border-color: transparent; }
 .drop-take:hover { color: #e0a0a0; border-color: transparent; }
+
+.session-note { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+.session-note h3 { margin: 0 0 0.25rem; font-weight: 600; }
+.session-note input[type="text"], .session-note textarea {
+  width: 100%; font: inherit; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px; padding: 0.4rem 0.6rem; margin: 0.35rem 0;
+}
+.session-note textarea { resize: vertical; }
+#save-session { color: var(--accent); border-color: var(--line); }
+#save-session:hover { background: var(--accent); color: #10242a; }

@@ -5,7 +5,10 @@
 // Session notes come next. The Web Audio plumbing lives in recorder.js.
 
 import { MicRecorder, listInputDevices, micSupported } from "./recorder.js";
-import { postBlob } from "../lib/api.js";
+import { sessionMarkdown, riffMarkdown } from "./session.js";
+import { postBlob, postJSON } from "../lib/api.js";
+
+const today = () => new Date().toISOString().slice(0, 10);
 
 const state = {
   supported: micSupported(),
@@ -17,6 +20,9 @@ const state = {
   takes: [], // { id, blob, url, duration, name, role, savedPath, _buffer }
   backingId: null, // take looped underneath while overdubbing, or null
   latencyMs: 0, // overdub calibration — trimmed off the front of an overdub
+  sessionTitle: "",
+  sessionNotes: "",
+  sessionSavedPath: null,
   _seq: 0,
 };
 
@@ -99,6 +105,7 @@ function render() {
       </div>
 
       ${state.takes.length ? renderTakes() : `<p class="muted hint">No takes yet — enable the mic and record one.</p>`}
+      ${state.takes.length ? renderSession() : ""}
     </section>`;
 
   wire();
@@ -128,13 +135,32 @@ function renderTakes() {
             ${isBacking ? "◼ backing" : "loop as backing"}
           </button>
           <button class="save-take" data-save="${t.id}" type="button">save to audio/</button>
+          <button class="riff-take" data-riff="${t.id}" type="button" title="capture this take as a riff idea">→ riffs/</button>
           <button class="drop-take" data-drop="${t.id}" type="button" aria-label="discard take">discard</button>
           ${t.savedPath ? `<span class="muted saved">saved → <code>${t.savedPath}</code></span>` : ""}
+          ${t.riffPath ? `<span class="muted saved">riff → <code>${t.riffPath}</code></span>` : ""}
         </div>
       </li>`;
     })
     .join("");
   return `<h3>Session takes</h3><ul class="takes">${rows}</ul>`;
+}
+
+function renderSession() {
+  return `
+    <div class="session-note">
+      <h3>Session note</h3>
+      <p class="muted">Write the session down while it's warm — it lands in
+        <code>recording/sessions/</code> with the take list.</p>
+      <input id="session-title" type="text" autocomplete="off"
+             placeholder="name this session (optional)" value="${state.sessionTitle}" />
+      <textarea id="session-notes" rows="3"
+        placeholder="what worked, what to fix next time…">${state.sessionNotes}</textarea>
+      <div class="row">
+        <button id="save-session" type="button">save session note</button>
+        ${state.sessionSavedPath ? `<span class="muted saved">saved → <code>${state.sessionSavedPath}</code></span>` : ""}
+      </div>
+    </div>`;
 }
 
 // --- level meter ----------------------------------------------------------
@@ -184,9 +210,20 @@ function wire() {
   root.querySelectorAll("[data-save]").forEach((b) =>
     b.addEventListener("click", () => saveTake(b.dataset.save)),
   );
+  root.querySelectorAll("[data-riff]").forEach((b) =>
+    b.addEventListener("click", () => captureRiff(b.dataset.riff)),
+  );
   root.querySelectorAll("[data-drop]").forEach((b) =>
     b.addEventListener("click", () => dropTake(b.dataset.drop)),
   );
+
+  root.querySelector("#session-title")?.addEventListener("input", (e) => {
+    state.sessionTitle = e.target.value;
+  });
+  root.querySelector("#session-notes")?.addEventListener("input", (e) => {
+    state.sessionNotes = e.target.value;
+  });
+  root.querySelector("#save-session")?.addEventListener("click", saveSession);
 }
 
 function takeById(id) {
@@ -289,6 +326,52 @@ async function saveTake(id) {
     render();
   } catch (e) {
     onStatus(`save failed: ${e.message}`);
+  }
+}
+
+// Save a take's WAV to audio/ if it isn't already there; returns its repo path.
+async function ensureSaved(t) {
+  if (t.savedPath) return t.savedPath;
+  const res = await postBlob("/takes", t.blob, { name: t.name?.trim() || t.role, ext: ".wav" });
+  t.savedPath = res.path;
+  return t.savedPath;
+}
+
+async function captureRiff(id) {
+  const t = takeById(id);
+  if (!t) return;
+  onStatus("capturing riff…");
+  try {
+    await ensureSaved(t); // a riff should point at a real file
+    const name = t.name?.trim() || `${t.role} riff`;
+    const body = riffMarkdown({ name, path: t.savedPath, date: today() });
+    const res = await postJSON("/riffs", { title: name, body });
+    t.riffPath = res.path;
+    onStatus(`riff → ${res.path}`);
+    render();
+  } catch (e) {
+    onStatus(`riff capture failed: ${e.message}`);
+  }
+}
+
+async function saveSession() {
+  onStatus("saving session…");
+  try {
+    // Land any unsaved takes first, so the note references real files.
+    for (const t of state.takes) await ensureSaved(t);
+    const title = state.sessionTitle?.trim() || "Studio session";
+    const body = sessionMarkdown({
+      title,
+      date: today(),
+      takes: state.takes,
+      notes: state.sessionNotes,
+    });
+    const res = await postJSON("/sessions", { title, body });
+    state.sessionSavedPath = res.path;
+    onStatus(`session note → ${res.path}`);
+    render();
+  } catch (e) {
+    onStatus(`session save failed: ${e.message}`);
   }
 }
 

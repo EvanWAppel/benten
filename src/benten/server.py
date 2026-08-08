@@ -13,7 +13,14 @@ from pydantic import BaseModel
 
 from benten import __version__
 from benten.drawers import write_note
-from benten.paths import AUDIO_DIR, COMPOSITION_DIR, REPO_ROOT, WEB_DIR
+from benten.paths import (
+    AUDIO_DIR,
+    COMPOSITION_DIR,
+    REPO_ROOT,
+    RIFFS_DIR,
+    SESSIONS_DIR,
+    WEB_DIR,
+)
 from benten.takes import store_take
 
 app = FastAPI(title="benten", version=__version__)
@@ -27,6 +34,16 @@ def composition_dir() -> Path:
 def audio_dir() -> Path:
     """Injectable so tests can point take writes at a temp dir."""
     return AUDIO_DIR
+
+
+def sessions_dir() -> Path:
+    """Injectable so tests can point session-note writes at a temp dir."""
+    return SESSIONS_DIR
+
+
+def riffs_dir() -> Path:
+    """Injectable so tests can point riff-capture writes at a temp dir."""
+    return RIFFS_DIR
 
 
 def _repo_relative(path: Path) -> str:
@@ -75,6 +92,26 @@ async def create_take(
         path = store_take(audio, name, data, ext=ext)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
+    return {"saved": True, "path": _repo_relative(path)}
+
+
+@app.post("/sessions")
+def create_session(
+    note: NotePayload,
+    sess_dir: Path = Depends(sessions_dir),
+) -> dict:
+    """Save a Studio session note into recording/sessions/; return where it landed."""
+    path = write_note(sess_dir, note.title, note.body)
+    return {"saved": True, "path": _repo_relative(path)}
+
+
+@app.post("/riffs")
+def create_riff(
+    note: NotePayload,
+    riff_dir: Path = Depends(riffs_dir),
+) -> dict:
+    """Capture a riff idea into riffs/; return where it landed."""
+    path = write_note(riff_dir, note.title, note.body)
     return {"saved": True, "path": _repo_relative(path)}
 
 

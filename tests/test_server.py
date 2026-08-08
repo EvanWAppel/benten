@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 
-from benten.server import app, audio_dir, composition_dir
+from benten.server import app, audio_dir, composition_dir, riffs_dir, sessions_dir
 
 client = TestClient(app)
 
@@ -79,3 +79,36 @@ def test_post_take_rejects_non_audio_extension(tmp_path):
 
     assert res.status_code == 400
     assert list(tmp_path.glob("*")) == []
+
+
+def test_post_session_writes_to_recording_sessions(tmp_path):
+    app.dependency_overrides[sessions_dir] = lambda: tmp_path
+    try:
+        res = client.post(
+            "/sessions",
+            json={"title": "Tuesday jam", "body": "# Tuesday jam\n"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert res.status_code == 200
+    assert res.json()["saved"] is True
+    written = list(tmp_path.glob("*.md"))
+    assert len(written) == 1
+    assert written[0].read_text() == "# Tuesday jam\n"
+
+
+def test_post_riff_writes_to_the_riffs_drawer(tmp_path):
+    app.dependency_overrides[riffs_dir] = lambda: tmp_path
+    try:
+        res = client.post(
+            "/riffs",
+            json={"title": "descending lick", "body": "# descending lick\n"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert res.status_code == 200
+    written = list(tmp_path.glob("*.md"))
+    assert len(written) == 1
+    assert written[0].read_text() == "# descending lick\n"

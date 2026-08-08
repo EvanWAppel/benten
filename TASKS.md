@@ -125,9 +125,9 @@ a session note touch the backend. Grouped like Phase 1: backend/storage first
 
 ### Group W — Session note & capture
 
-- [ ] Render a session note as clean Markdown (date, tempo, take list w/ paths).
-- [ ] `POST` a session note into `recording/sessions/` via the file layer.
-- [ ] Offer a captured idea to `riffs/` (a one-line link to the take).
+- [x] Render a session note as clean Markdown (date, take list w/ paths).
+- [x] `POST` a session note into `recording/sessions/` via the file layer.
+- [x] Offer a captured idea to `riffs/` (a one-line link to the take).
 
 ### Group X — Phase 2 polish & acceptance
 
