@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 
-from benten.server import app, composition_dir
+from benten.server import app, audio_dir, composition_dir
 
 client = TestClient(app)
 
@@ -42,3 +42,40 @@ def test_post_composition_writes_to_the_drawer(tmp_path):
     written = list(tmp_path.glob("*.md"))
     assert len(written) == 1
     assert written[0].read_text() == "# Blues in A\n"
+
+
+def test_post_take_stores_audio_bytes(tmp_path):
+    app.dependency_overrides[audio_dir] = lambda: tmp_path
+    try:
+        res = client.post(
+            "/takes",
+            params={"name": "Rhythm Take", "ext": ".wav"},
+            content=b"RIFFfake-wav-bytes",
+            headers={"Content-Type": "audio/wav"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert res.status_code == 200
+    body = res.json()
+    assert body["saved"] is True
+    written = list(tmp_path.glob("*.wav"))
+    assert len(written) == 1
+    assert written[0].read_bytes() == b"RIFFfake-wav-bytes"
+    # The returned path points at the file that was written.
+    assert body["path"].endswith(written[0].name)
+
+
+def test_post_take_rejects_non_audio_extension(tmp_path):
+    app.dependency_overrides[audio_dir] = lambda: tmp_path
+    try:
+        res = client.post(
+            "/takes",
+            params={"name": "sneaky", "ext": ".exe"},
+            content=b"x",
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert res.status_code == 400
+    assert list(tmp_path.glob("*")) == []

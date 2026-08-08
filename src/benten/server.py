@@ -6,14 +6,15 @@ No music logic and no audio pass through here — that all lives in the browser.
 
 from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from benten import __version__
 from benten.drawers import write_note
-from benten.paths import COMPOSITION_DIR, REPO_ROOT, WEB_DIR
+from benten.paths import AUDIO_DIR, COMPOSITION_DIR, REPO_ROOT, WEB_DIR
+from benten.takes import store_take
 
 app = FastAPI(title="benten", version=__version__)
 
@@ -21,6 +22,19 @@ app = FastAPI(title="benten", version=__version__)
 def composition_dir() -> Path:
     """Injectable so tests can point writes at a temp dir."""
     return COMPOSITION_DIR
+
+
+def audio_dir() -> Path:
+    """Injectable so tests can point take writes at a temp dir."""
+    return AUDIO_DIR
+
+
+def _repo_relative(path: Path) -> str:
+    """A repo-relative path for display, falling back to the bare filename."""
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return path.name
 
 
 class NotePayload(BaseModel):
@@ -41,11 +55,27 @@ def create_composition(
 ) -> dict:
     """Save a Markdown note into the composition/ drawer; return where it landed."""
     path = write_note(comp_dir, note.title, note.body)
+    return {"saved": True, "path": _repo_relative(path)}
+
+
+@app.post("/takes")
+async def create_take(
+    request: Request,
+    name: str = "take",
+    ext: str = ".wav",
+    audio: Path = Depends(audio_dir),
+) -> dict:
+    """Store an audio take (raw bytes in the body) in the git-ignored audio/ dir.
+
+    The take name and extension come in as query params; the body is the audio
+    itself. Only known audio extensions are accepted (400 otherwise).
+    """
+    data = await request.body()
     try:
-        where = str(path.relative_to(REPO_ROOT))
-    except ValueError:
-        where = path.name
-    return {"saved": True, "path": where}
+        path = store_take(audio, name, data, ext=ext)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    return {"saved": True, "path": _repo_relative(path)}
 
 
 @app.get("/")
