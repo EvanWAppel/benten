@@ -4,6 +4,7 @@
 import { getJSON } from "./lib/api.js";
 import { mount as mountChords } from "./modules/chords.js";
 import { mount as mountStudio } from "./modules/studio.js";
+import { mount as mountTabs } from "./modules/tabs.js";
 
 const view = document.getElementById("view");
 const statusEl = document.getElementById("status");
@@ -29,6 +30,7 @@ modules.forEach((btn) => {
     btn.classList.add("is-active");
     if (btn.dataset.module === "chords") mountChords(view, { setStatus });
     else if (btn.dataset.module === "studio") mountStudio(view, { setStatus });
+    else if (btn.dataset.module === "tabs") mountTabs(view, { setStatus });
   });
 });
 
