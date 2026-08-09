@@ -18,6 +18,7 @@ THEORY_DIR = REPO_ROOT / "theory"
 RIFFS_DIR = REPO_ROOT / "riffs"
 RECORDING_DIR = REPO_ROOT / "recording"
 SESSIONS_DIR = RECORDING_DIR / "sessions"
+INSTRUMENTS_DIR = REPO_ROOT / "instruments"
 
 # Local working dir for audio takes — git-ignored, never committed (PRD §2).
 AUDIO_DIR = REPO_ROOT / "audio"

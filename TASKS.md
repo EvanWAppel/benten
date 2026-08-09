@@ -138,11 +138,22 @@ a session note touch the backend. Grouped like Phase 1: backend/storage first
 - [x] README section: what the Studio module does and how to use it.
 - [ ] Log the first real Studio session in `practice-log.md`. *(Evan's to write.)*
 
-## Phase 3 — Tabs (deferred detail)
+## Phase 3 — Tabs
 
-- [ ] Decide the tab source (API / licensed / local files) — resolve PRD §8 first.
-- [ ] Search UI surfaced next to the relevant `instruments/` notes.
-- [ ] Save/link a found tab into the right instrument drawer.
+- [x] Decide the tab source (API / licensed / local files) — resolve PRD §8 first.
+      *(External API — **Songsterr**. Network on the search path only; saving keeps a
+      Markdown reference that links out, never scraping tab content. Source is one
+      swappable constant in `src/benten/tabs.py`; the HTTP fetch is injected so search
+      logic tests without a network.)*
+- [x] Search UI surfaced next to the relevant `instruments/` notes. *(Tabs module:
+      search box + per-instrument file-under selector; `GET /tabs/search` proxies
+      Songsterr.)*
+- [x] Save/link a found tab into the right instrument drawer. *(`POST /tabs` writes a
+      Markdown reference into `instruments/<instrument>/tabs/`; instrument validated
+      against the existing drawers.)*
+- [x] Walk the flow end-to-end: search → save. *(Live-verified: real Songsterr search →
+      valid link-out URL (301s to the tab page) → clean Markdown reference on disk.)*
+- [ ] Log the first real tab find in an instrument `practice-log.md`. *(Evan's to write.)*
 
 ## Phase 4 — Effects (deferred detail)
 

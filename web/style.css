@@ -201,3 +201,16 @@ button:hover { border-color: var(--accent); }
 .session-note textarea { resize: vertical; }
 #save-session { color: var(--accent); border-color: var(--line); }
 #save-session:hover { background: var(--accent); color: #10242a; }
+
+/* Tabs — search results + save (Phase 3). */
+.tabs #q { flex: 1 1 16rem; font: inherit; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px; padding: 0.4rem 0.6rem; }
+.tabs .error { color: #e0a0a0; }
+.tab-results { list-style: none; margin: 0.75rem 0 0; padding: 0; }
+.tab-result { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+  padding: 0.45rem 0; border-bottom: 1px solid var(--line); }
+.tab-name { flex: 1 1 12rem; }
+.tab-link { color: var(--accent); text-decoration: none; }
+.tab-link:hover { text-decoration: underline; }
+.save-tab { color: var(--accent); border-color: var(--line); }
+.save-tab:hover { background: var(--accent); color: #10242a; }

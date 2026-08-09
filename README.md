@@ -63,8 +63,15 @@ the overdub back into time. When you're done, write a session note straight into
 [`riffs/`](./riffs) drawer. Serious mixing still belongs in your DAW; this is the bench
 where the performance becomes a fact.
 
-See [`PRD.md`](./PRD.md) for where it's headed — tab search, then a custom effects
-chain — and [`TASKS.md`](./TASKS.md) for the build.
+The **Tabs** module goes and finds the tablature. Type a song or an artist, and it
+searches [Songsterr](https://www.songsterr.com) live; pick the instrument you want it
+filed under and hit save. What lands in `instruments/<instrument>/tabs/` is a clean
+Markdown reference — title, artist, and a link out to the source — never a scraped copy
+of the tab itself. The network is only ever touched to *search*; the note it leaves
+behind reads fine with the server off, like everything else in the drawers.
+
+See [`PRD.md`](./PRD.md) for where it's headed — a custom effects chain next — and
+[`TASKS.md`](./TASKS.md) for the build.
 
 ## How to use it
 

@@ -12,15 +12,17 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from benten import __version__
-from benten.drawers import write_note
+from benten.drawers import slugify, write_note
 from benten.paths import (
     AUDIO_DIR,
     COMPOSITION_DIR,
+    INSTRUMENTS_DIR,
     REPO_ROOT,
     RIFFS_DIR,
     SESSIONS_DIR,
     WEB_DIR,
 )
+from benten.tabs import Fetch, _http_get, search_tabs
 from benten.takes import store_take
 
 app = FastAPI(title="benten", version=__version__)
@@ -46,6 +48,16 @@ def riffs_dir() -> Path:
     return RIFFS_DIR
 
 
+def instruments_dir() -> Path:
+    """Injectable so tests can point tab-reference writes at a temp dir."""
+    return INSTRUMENTS_DIR
+
+
+def tab_fetcher() -> Fetch:
+    """Injectable so tests can search without touching the network."""
+    return _http_get
+
+
 def _repo_relative(path: Path) -> str:
     """A repo-relative path for display, falling back to the bare filename."""
     try:
@@ -57,6 +69,10 @@ def _repo_relative(path: Path) -> str:
 class NotePayload(BaseModel):
     title: str
     body: str
+
+
+class TabNotePayload(NotePayload):
+    instrument: str = "guitar"
 
 
 @app.get("/health")
@@ -112,6 +128,38 @@ def create_riff(
 ) -> dict:
     """Capture a riff idea into riffs/; return where it landed."""
     path = write_note(riff_dir, note.title, note.body)
+    return {"saved": True, "path": _repo_relative(path)}
+
+
+@app.get("/tabs/search")
+def tabs_search(
+    q: str = "",
+    fetch: Fetch = Depends(tab_fetcher),
+) -> dict:
+    """Search the external tab source (Songsterr). Network on the search path only —
+    saving a result writes a Markdown reference into a drawer (see POST /tabs)."""
+    try:
+        results = search_tabs(q, fetch=fetch)
+    except Exception as e:  # network/parse failure from an upstream we don't own
+        raise HTTPException(status_code=502, detail=f"tab search failed: {e}") from e
+    return {"query": q.strip(), "results": results}
+
+
+@app.post("/tabs")
+def create_tab(
+    note: TabNotePayload,
+    instr_root: Path = Depends(instruments_dir),
+) -> dict:
+    """Save a tab *reference* (Markdown, links out) into instruments/<instrument>/tabs/.
+
+    The instrument must be an existing drawer under the instruments root — this both
+    picks the right drawer and keeps the write from escaping it.
+    """
+    slug = slugify(note.instrument)
+    drawer = (instr_root / slug).resolve()
+    if not drawer.is_relative_to(instr_root.resolve()) or not drawer.is_dir():
+        raise HTTPException(status_code=400, detail=f"unknown instrument: {note.instrument}")
+    path = write_note(drawer / "tabs", note.title, note.body)
     return {"saved": True, "path": _repo_relative(path)}
 
 
