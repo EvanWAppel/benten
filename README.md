@@ -16,6 +16,11 @@ rest until you need them. There's now also an optional local app (see
 [The app](#the-app-optional)) for the things a notebook can't do, but the drawers
 never depend on it.
 
+> **Live demo:** [try benten in your browser](https://YOUR-APP.up.railway.app) —
+> a read-only public build. Play chords, record and overdub a take, build an effect
+> chain, search for tabs; saving is off, so nothing is written back. *(Replace this
+> URL with the one Railway gives you.)*
+
 ## The drawers
 
 | Folder | What lives here |
@@ -83,6 +88,34 @@ That's the whole app: the four drawers the Markdown workshop always had, now wit
 tool on the bench for each — chords you can hear, takes you can catch, tabs you can
 find, and effects you can shape. See [`PRD.md`](./PRD.md) for the thinking and
 [`TASKS.md`](./TASKS.md) for the build.
+
+## State of the bench
+
+The app is feature-complete against its plan — all four phases are built, and each
+shipped the same way: logic tested first, then the interface, then a walk through
+the whole flow in a real browser before it counted as done.
+
+- **Chords & scales** *(Phase 1 + 1.5)* — enter a progression, get the scales that
+  fit, see them on the fretboard, hear the whole thing loop against a metronome, and
+  save it to `composition/`.
+- **Studio** *(Phase 2)* — capture a mic take, loop it, overdub a lead over it, and
+  file a session note into `recording/sessions/`. Audio stays in a git-ignored
+  `audio/` dir, referenced by path.
+- **Tabs** *(Phase 3)* — search [Songsterr](https://www.songsterr.com) and file a
+  Markdown reference into the right instrument drawer. Network on the search path
+  only; what's saved links out.
+- **Effects** *(Phase 4)* — wire a chain of Web Audio blocks, audition it on a take
+  with an A/B bypass, and save the chain as a plain-Markdown preset in
+  `production/effects/`.
+
+Under it all, one rule holds: everything the app writes is clean, hand-editable
+Markdown. If the server never started — or vanished tomorrow — the drawers still
+read and edit by hand. The tests are the proof it stays that way:
+`uv run pytest` (backend) and `node --test jstests/<file>.test.mjs` (front-end logic).
+
+benten is built to run on `127.0.0.1`, private and single-user. The one exception is
+the public **live demo** linked up top: the same app in read-only mode, so it can
+sit in a portfolio without a rewrite. See [Deploying the demo](./DEPLOY.md).
 
 ## How to use it
 

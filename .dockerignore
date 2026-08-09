@@ -1,0 +1,23 @@
+# Keep the image lean and reproducible — build deps from the lock, not local cruft.
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.egg-info
+.pytest_cache
+
+# Local audio working dir + big binaries (never in the demo; it's read-only anyway).
+audio
+*.wav
+*.aiff
+*.flac
+*.logicx
+*.als
+
+# Tests and editor/OS files aren't needed at runtime.
+tests
+jstests
+.vscode
+.DS_Store
+node_modules

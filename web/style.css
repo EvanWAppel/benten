@@ -250,3 +250,12 @@ button:hover { border-color: var(--accent); }
   border: 1px solid var(--line); border-radius: 6px; padding: 0.4rem 0.6rem; }
 #save-preset { color: var(--accent); border-color: var(--line); }
 #save-preset:hover:not(:disabled) { background: var(--accent); color: #10242a; }
+
+/* Live-demo banner (public read-only demo only). */
+.demo-banner {
+  background: linear-gradient(90deg, #1c2a30, #14161a);
+  color: var(--ink); border-bottom: 1px solid var(--accent);
+  padding: 0.5rem 1rem; font-size: 0.85rem; text-align: center;
+}
+.demo-banner strong { color: var(--accent); }
+.demo-banner a { color: var(--accent); }

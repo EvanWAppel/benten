@@ -6,6 +6,7 @@ import { analyzeProgression } from "./theory.js";
 import { fretboardSVG } from "./fretboard.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
+import { DEMO_MSG, isDemo } from "../lib/demo.js";
 import { playChord, ProgressionPlayer } from "./audio.js";
 
 const TONICS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -313,6 +314,7 @@ function togglePlay() {
 }
 
 async function saveProgression() {
+  if (isDemo()) return onStatus(DEMO_MSG);
   const title = root.querySelector("#title")?.value.trim() || "Untitled progression";
   const body = progressionMarkdown({
     title,
