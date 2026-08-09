@@ -3,6 +3,7 @@
 
 import { getJSON } from "./lib/api.js";
 import { mount as mountChords } from "./modules/chords.js";
+import { mount as mountStudio } from "./modules/studio.js";
 
 const view = document.getElementById("view");
 const statusEl = document.getElementById("status");
@@ -27,6 +28,7 @@ modules.forEach((btn) => {
     modules.forEach((b) => b.classList.remove("is-active"));
     btn.classList.add("is-active");
     if (btn.dataset.module === "chords") mountChords(view, { setStatus });
+    else if (btn.dataset.module === "studio") mountStudio(view, { setStatus });
   });
 });
 

@@ -85,14 +85,58 @@ Convention: one task = one small, verifiable change. Keep them that size.
 - [x] Metronome with adjustable tempo and time signature. *(tempo bpm + 4/4·3/4·6/8 feel)*
 - [x] Count-in and loop controls (start/stop, bars per chord).
 
-## Phase 2 — Studio (deferred detail)
+## Phase 2 — Studio
 
-- [ ] Mic access via `getUserMedia` with a device picker and level meter.
-- [ ] Record a take with `MediaRecorder`; save audio to the local working dir.
-- [ ] Loop a rhythm take as a backing track.
-- [ ] Overdub: record a lead while the backing track plays.
-- [ ] Latency offset/calibration so overdubs land in time.
-- [ ] Write a session note to `recording/sessions/`; offer capture to `riffs/`.
+Record → overdub → play back, all client-side audio; only the resulting files and
+a session note touch the backend. Grouped like Phase 1: backend/storage first
+(testable without a browser), then the front-end, then acceptance.
+
+### Group S — Take storage (backend)
+
+- [x] `store_take` file-layer fn: write audio bytes into `audio/` (git-ignored),
+      auto-named, never clobbering — mirrors `write_note`, injectable dir.
+- [x] Restrict to audio extensions (`.wav`/`.aiff`/`.flac`/`.webm`) and refuse any
+      write that would escape `audio/` (defense in depth).
+- [x] `POST /takes` — accept raw audio bytes + a name, store via `store_take`,
+      return the repo-relative path.
+- [x] Unit-test the take writer with an injected temp dir (no real FS writes).
+
+### Group T — Mic & level meter (front-end)
+
+- [x] Studio module scaffold; enable the `Studio` nav button and mount it.
+- [x] `getUserMedia` mic access with a device picker (`enumerateDevices`).
+- [x] Live input level meter from an `AnalyserNode` (peak/RMS).
+- [x] Graceful states: permission denied, no device, not-secure-context.
+
+### Group U — Record a take
+
+- [x] PCM capture path: tap the mic through Web Audio and buffer Float32 samples. *(AudioWorklet)*
+- [x] Encode buffered PCM to a 16-bit WAV blob client-side (no lossy intermediate).
+- [x] Transport: arm → record → stop; POST the WAV to `/takes`; show saved path.
+- [x] Play the just-recorded take back in the browser.
+- [x] Unit-test the WAV encoder (header fields + sample count) with `node --test`. *(5 tests)*
+
+### Group V — Backing track & overdub
+
+- [x] Loop a recorded take as a backing track (gapless). *(looped AudioBufferSource)*
+- [x] Overdub: record a new take while the backing track plays — "jam with myself."
+- [x] Latency offset/calibration so overdubs land in time (PRD §8 risk). *(front-trim in ms)*
+- [x] Keep the take list in the session (name, duration, role: rhythm/lead).
+
+### Group W — Session note & capture
+
+- [x] Render a session note as clean Markdown (date, take list w/ paths).
+- [x] `POST` a session note into `recording/sessions/` via the file layer.
+- [x] Offer a captured idea to `riffs/` (a one-line link to the take).
+
+### Group X — Phase 2 polish & acceptance
+
+- [x] Walk the PRD §5 Phase-2 flow end-to-end: record → loop → overdub → save.
+      *(Live-mic verified: real capture → take → save to `audio/` (valid 48kHz/16-bit
+      mono WAV on disk). Overdub timing — dialing the latency offset by ear — is the
+      one piece that still wants a human at the machine.)*
+- [x] README section: what the Studio module does and how to use it.
+- [ ] Log the first real Studio session in `practice-log.md`. *(Evan's to write.)*
 
 ## Phase 3 — Tabs (deferred detail)
 
