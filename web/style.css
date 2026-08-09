@@ -214,3 +214,7 @@ button:hover { border-color: var(--accent); }
 .tab-link:hover { text-decoration: underline; }
 .save-tab { color: var(--accent); border-color: var(--line); }
 .save-tab:hover { background: var(--accent); color: #10242a; }
+.save-tab.is-saved, .save-tab.is-saved:disabled {
+  color: #8fce9b; border-color: transparent; background: transparent;
+  opacity: 1; cursor: default;
+}
