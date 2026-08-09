@@ -70,7 +70,18 @@ Markdown reference — title, artist, and a link out to the source — never a s
 of the tab itself. The network is only ever touched to *search*; the note it leaves
 behind reads fine with the server off, like everything else in the drawers.
 
-See [`PRD.md`](./PRD.md) for where it's headed — a custom effects chain next — and
+The **Effects** module is a small pedalboard. Wire up a chain of ready-made blocks
+— distortion, filter, delay, reverb — reorder them, turn the knobs, and load one of
+your Studio takes to hear it run through the chain, with an A/B bypass to check your
+work against the dry signal. When a chain earns its keep, name it and save it: what
+lands in `production/effects/` is a plain-Markdown preset — a little table of blocks
+and their settings you can read and tweak by hand — that loads straight back into the
+rack. It's a bench pedalboard for finding a sound, not a mix; the real mixing still
+belongs in your DAW.
+
+That's the whole app: the four drawers the Markdown workshop always had, now with a
+tool on the bench for each — chords you can hear, takes you can catch, tabs you can
+find, and effects you can shape. See [`PRD.md`](./PRD.md) for the thinking and
 [`TASKS.md`](./TASKS.md) for the build.
 
 ## How to use it

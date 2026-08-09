@@ -155,9 +155,39 @@ a session note touch the backend. Grouped like Phase 1: backend/storage first
       valid link-out URL (301s to the tab page) → clean Markdown reference on disk.)*
 - [ ] Log the first real tab find in an instrument `practice-log.md`. *(Evan's to write.)*
 
-## Phase 4 — Effects (deferred detail)
+## Phase 4 — Effects
 
-- [ ] `AudioWorklet` scaffolding for a modular effect chain.
-- [ ] Core effect blocks: delay, reverb, distortion, filter.
-- [ ] Wire blocks into a chain and audition on a Studio take.
-- [ ] Save/load effect chains as named presets (into `production/`).
+Scope confirmed (PRD §8): wire ready-made Web Audio **primitives** into a chain and
+save presets — not authoring novel DSP. The four core blocks map onto native nodes
+(`WaveShaper`/`BiquadFilter`/`Delay`+feedback/`Convolver`), so no hand-written
+`AudioWorklet` sample math is needed — the native nodes *are* the primitives.
+
+### Group AA — Effect model & preset Markdown (pure, tested)
+
+- [x] Effect definitions: the four blocks + their param schemas (defaults, ranges).
+- [x] `presetMarkdown` renders a chain as clean, hand-editable Markdown (param table).
+- [x] `parsePreset` round-trips that Markdown back into a chain (parse(render(x)) == x).
+
+### Group BB — Preset storage (backend)
+
+- [x] `production_dir` path + `POST /presets` writes a preset into `production/effects/`.
+- [x] `GET /presets` lists saved presets (name + body) for loading.
+- [x] Unit-test the endpoints with an injected temp dir.
+
+### Group CC — Audio engine (front-end)
+
+- [x] Build a Web Audio chain from a block list; reuse the shared `audioContext()`.
+- [x] Distortion (`WaveShaper`), filter (`BiquadFilter`), delay (feedback), reverb
+      (`Convolver` w/ a generated impulse). A/B bypass.
+
+### Group DD — Effects UI
+
+- [x] Add / remove / reorder blocks; per-block param controls.
+- [x] Load a Studio take (WAV) and audition it through the chain, live.
+- [x] Save the chain as a named preset; load a saved preset back into the rack.
+
+### Group EE — Polish & acceptance
+
+- [x] Enable the `Effects` nav button and mount the module.
+- [x] Walk the flow end-to-end: build a chain → audition on a take → save → reload.
+- [x] README section: what the Effects module does and how to use it.
