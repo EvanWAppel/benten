@@ -7,7 +7,7 @@ No music logic and no audio pass through here — that all lives in the browser.
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -121,8 +121,21 @@ def index() -> FileResponse:
     return FileResponse(WEB_DIR / "index.html")
 
 
+class NoCacheStaticFiles(StaticFiles):
+    """Serve static assets with `Cache-Control: no-cache` so the browser always
+    revalidates. This is a no-build, edit-and-reload app — stale JS/CSS from the
+    browser cache would silently serve old code after an edit (it bit us once).
+    `no-cache` still allows 304s, so unchanged files stay cheap.
+    """
+
+    def file_response(self, *args, **kwargs) -> Response:
+        resp = super().file_response(*args, **kwargs)
+        resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
+
 # Static assets (JS modules, CSS). The shell references these under /static.
-app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
+app.mount("/static", NoCacheStaticFiles(directory=WEB_DIR), name="static")
 
 
 def run() -> None:

@@ -131,10 +131,10 @@ a session note touch the backend. Grouped like Phase 1: backend/storage first
 
 ### Group X — Phase 2 polish & acceptance
 
-- [ ] Walk the PRD §5 Phase-2 flow end-to-end: record → loop → overdub → save.
-      *(Verified up to the mic boundary — unit tests, endpoint round-trips, and UI
-      rendering all green; the live-mic pass needs a permission grant, so it's
-      Evan's to run at the machine.)*
+- [x] Walk the PRD §5 Phase-2 flow end-to-end: record → loop → overdub → save.
+      *(Live-mic verified: real capture → take → save to `audio/` (valid 48kHz/16-bit
+      mono WAV on disk). Overdub timing — dialing the latency offset by ear — is the
+      one piece that still wants a human at the machine.)*
 - [x] README section: what the Studio module does and how to use it.
 - [ ] Log the first real Studio session in `practice-log.md`. *(Evan's to write.)*
 

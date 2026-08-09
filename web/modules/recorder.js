@@ -34,11 +34,43 @@ export class MicRecorder {
     this._chunks = [];
     this._meterBuf = null;
     this.recording = false;
+    this._workletLoaded = false; // addModule ran on this.ctx (once per context)
   }
 
   // The capture sample rate (the mic's AudioContext), or a sane default.
   get sampleRate() {
     return this.ctx?.sampleRate ?? 48000;
+  }
+
+  // One long-lived AudioContext per recorder, with the worklet module loaded
+  // exactly once. Reusing the context (rather than newing one per open) avoids
+  // leaking contexts and — crucially — only loads the worklet once, so a transient
+  // load failure can't recur mid-session.
+  async _ensureContext() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this._workletLoaded = false;
+    }
+    if (this.ctx.state === "suspended") await this.ctx.resume();
+    if (!this._workletLoaded) {
+      await this._loadWorklet();
+      this._workletLoaded = true;
+    }
+    return this.ctx;
+  }
+
+  // Load the capture worklet, retrying once. Right after the first getUserMedia
+  // permission grant, Chrome's worklet loader can briefly reject addModule with an
+  // AbortError ("Unable to load a worklet's module"); a short wait and one retry
+  // clears it reliably.
+  async _loadWorklet() {
+    const url = "/static/worklets/recorder-worklet.js";
+    try {
+      await this.ctx.audioWorklet.addModule(url);
+    } catch (e) {
+      await new Promise((r) => setTimeout(r, 200));
+      await this.ctx.audioWorklet.addModule(url); // second attempt; let it throw if it still fails
+    }
   }
 
   // Open the mic and wire the metering + capture graph. Idempotent per device.
@@ -55,8 +87,7 @@ export class MicRecorder {
       },
     });
 
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (this.ctx.state === "suspended") await this.ctx.resume();
+    await this._ensureContext();
     this.source = this.ctx.createMediaStreamSource(this.stream);
 
     this.analyser = this.ctx.createAnalyser();
@@ -64,7 +95,6 @@ export class MicRecorder {
     this._meterBuf = new Float32Array(this.analyser.fftSize);
     this.source.connect(this.analyser);
 
-    await this.ctx.audioWorklet.addModule("/static/worklets/recorder-worklet.js");
     this.worklet = new AudioWorkletNode(this.ctx, "recorder-processor");
     this.worklet.port.onmessage = (e) => {
       if (this.recording) this._chunks.push(e.data);
@@ -135,11 +165,13 @@ export class MicRecorder {
 
   // Decode a WAV/blob back into an AudioBuffer for looping as a backing track.
   async decode(blob) {
-    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    await this._ensureContext();
     const buf = await blob.arrayBuffer();
     return this.ctx.decodeAudioData(buf);
   }
 
+  // Tear down the mic graph and release the device, but keep the AudioContext (and
+  // its loaded worklet) alive so the next open() reuses it — no re-fetch, no leak.
   async close() {
     try {
       this.stream?.getTracks().forEach((t) => t.stop());

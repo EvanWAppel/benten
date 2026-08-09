@@ -26,6 +26,12 @@ def test_static_assets_are_served():
     assert res.status_code == 200
 
 
+def test_static_assets_are_not_cached():
+    # No-build app: the browser must revalidate so an edit isn't masked by cache.
+    res = client.get("/static/app.js")
+    assert "no-cache" in res.headers.get("cache-control", "")
+
+
 def test_post_composition_writes_to_the_drawer(tmp_path):
     # Override the drawer so the test never touches the real composition/ dir.
     app.dependency_overrides[composition_dir] = lambda: tmp_path
