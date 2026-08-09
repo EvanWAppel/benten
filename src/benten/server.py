@@ -17,6 +17,7 @@ from benten.paths import (
     AUDIO_DIR,
     COMPOSITION_DIR,
     INSTRUMENTS_DIR,
+    PRESETS_DIR,
     REPO_ROOT,
     RIFFS_DIR,
     SESSIONS_DIR,
@@ -51,6 +52,11 @@ def riffs_dir() -> Path:
 def instruments_dir() -> Path:
     """Injectable so tests can point tab-reference writes at a temp dir."""
     return INSTRUMENTS_DIR
+
+
+def presets_dir() -> Path:
+    """Injectable so tests can point effect-preset writes at a temp dir."""
+    return PRESETS_DIR
 
 
 def tab_fetcher() -> Fetch:
@@ -129,6 +135,26 @@ def create_riff(
     """Capture a riff idea into riffs/; return where it landed."""
     path = write_note(riff_dir, note.title, note.body)
     return {"saved": True, "path": _repo_relative(path)}
+
+
+@app.post("/presets")
+def create_preset(
+    note: NotePayload,
+    pdir: Path = Depends(presets_dir),
+) -> dict:
+    """Save an effect-chain preset (Markdown) into production/effects/."""
+    path = write_note(pdir, note.title, note.body)
+    return {"saved": True, "path": _repo_relative(path)}
+
+
+@app.get("/presets")
+def list_presets(pdir: Path = Depends(presets_dir)) -> dict:
+    """List saved presets (filename stem + raw Markdown body) for loading back in."""
+    presets = []
+    if pdir.is_dir():
+        for f in sorted(pdir.glob("*.md")):
+            presets.append({"name": f.stem, "body": f.read_text(encoding="utf-8")})
+    return {"presets": presets}
 
 
 @app.get("/tabs/search")

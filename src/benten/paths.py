@@ -19,6 +19,10 @@ RIFFS_DIR = REPO_ROOT / "riffs"
 RECORDING_DIR = REPO_ROOT / "recording"
 SESSIONS_DIR = RECORDING_DIR / "sessions"
 INSTRUMENTS_DIR = REPO_ROOT / "instruments"
+PRODUCTION_DIR = REPO_ROOT / "production"
+# Effect-chain presets live in a subfolder so listing them never trips over other
+# production/ notes.
+PRESETS_DIR = PRODUCTION_DIR / "effects"
 
 # Local working dir for audio takes — git-ignored, never committed (PRD §2).
 AUDIO_DIR = REPO_ROOT / "audio"
