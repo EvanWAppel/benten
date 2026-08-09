@@ -132,6 +132,7 @@ async function runSearch() {
 async function saveTab(i) {
   const r = state.results[i];
   if (!r) return;
+  const btn = root.querySelector(`.save-tab[data-i="${i}"]`);
   const title = tabTitle({ artist: r.artist, title: r.title });
   const body = tabMarkdown({
     title: r.title,
@@ -145,6 +146,11 @@ async function saveTab(i) {
   try {
     const res = await postJSON("/tabs", { title, body, instrument: state.instrument });
     onStatus(`saved → ${res.path}`);
+    if (btn) {
+      btn.textContent = "✓ Saved";
+      btn.classList.add("is-saved");
+      btn.disabled = true;
+    }
   } catch (e) {
     onStatus(`save failed: ${e.message}`);
   }
