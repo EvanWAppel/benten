@@ -5,6 +5,7 @@
 // Markdown rendering lives in tabnote.js.
 
 import { getJSON, postJSON } from "../lib/api.js";
+import { DEMO_MSG, isDemo } from "../lib/demo.js";
 import { tabMarkdown, tabTitle } from "./tabnote.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -130,6 +131,7 @@ async function runSearch() {
 }
 
 async function saveTab(i) {
+  if (isDemo()) return onStatus(DEMO_MSG);
   const r = state.results[i];
   if (!r) return;
   const btn = root.querySelector(`.save-tab[data-i="${i}"]`);

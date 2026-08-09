@@ -7,6 +7,7 @@
 import { MicRecorder, listInputDevices, micSupported } from "./recorder.js";
 import { sessionMarkdown, riffMarkdown } from "./session.js";
 import { postBlob, postJSON } from "../lib/api.js";
+import { DEMO_MSG, isDemo } from "../lib/demo.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -315,6 +316,7 @@ function toggleBacking(id) {
 }
 
 async function saveTake(id) {
+  if (isDemo()) return onStatus(DEMO_MSG);
   const t = takeById(id);
   if (!t) return;
   const name = t.name?.trim() || t.role;
@@ -338,6 +340,7 @@ async function ensureSaved(t) {
 }
 
 async function captureRiff(id) {
+  if (isDemo()) return onStatus(DEMO_MSG);
   const t = takeById(id);
   if (!t) return;
   onStatus("capturing riff…");
@@ -355,6 +358,7 @@ async function captureRiff(id) {
 }
 
 async function saveSession() {
+  if (isDemo()) return onStatus(DEMO_MSG);
   onStatus("saving session…");
   try {
     // Land any unsaved takes first, so the note references real files.

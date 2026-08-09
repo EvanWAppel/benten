@@ -9,6 +9,7 @@ import { EFFECTS, EFFECT_TYPES, defaultBlock } from "./effects-model.js";
 import { buildChain } from "./effects-audio.js";
 import { parsePreset, presetMarkdown } from "./preset.js";
 import { getJSON, postJSON } from "../lib/api.js";
+import { DEMO_MSG, isDemo } from "../lib/demo.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -263,6 +264,7 @@ async function loadPresetList() {
 }
 
 async function savePreset() {
+  if (isDemo()) return onStatus(DEMO_MSG);
   const name = (state.presetName || "").trim();
   if (!name) return onStatus("name the chain before saving");
   const body = presetMarkdown({ name, chain: state.chain, date: today() });

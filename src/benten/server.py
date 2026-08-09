@@ -4,6 +4,7 @@ Its only jobs: serve the front-end and (later) read/write the Markdown drawers.
 No music logic and no audio pass through here — that all lives in the browser.
 """
 
+import os
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -27,6 +28,23 @@ from benten.tabs import Fetch, _http_get, search_tabs
 from benten.takes import store_take
 
 app = FastAPI(title="benten", version=__version__)
+
+# Read-only demo mode (for the public Railway demo). benten is local-first and
+# single-user by design (PRD §2); a public demo departs from that, so when
+# BENTEN_DEMO=1 every write is refused server-side — the interactive, client-side
+# features (playback, fretboard, effects audition, mic, tab search) all still work.
+DEMO_MSG = "benten is running as a read-only live demo — saving is disabled."
+
+
+def is_demo() -> bool:
+    return os.environ.get("BENTEN_DEMO") == "1"
+
+
+def require_writable() -> None:
+    """Guard for write routes: refuse in demo mode (defense in depth — the client
+    also gates saves, but a direct API call must not be able to write either)."""
+    if is_demo():
+        raise HTTPException(status_code=403, detail=DEMO_MSG)
 
 
 def composition_dir() -> Path:
@@ -83,14 +101,18 @@ class TabNotePayload(NotePayload):
 
 @app.get("/health")
 def health() -> dict:
-    """Liveness signal — probed by the Factotum manifest's health-ping."""
-    return {"status": "ok", "app": "benten", "version": __version__}
+    """Liveness signal — probed by the Factotum manifest's health-ping.
+
+    Also reports `demo` so the front-end can show a read-only banner and skip saves.
+    """
+    return {"status": "ok", "app": "benten", "version": __version__, "demo": is_demo()}
 
 
 @app.post("/compositions")
 def create_composition(
     note: NotePayload,
     comp_dir: Path = Depends(composition_dir),
+    _: None = Depends(require_writable),
 ) -> dict:
     """Save a Markdown note into the composition/ drawer; return where it landed."""
     path = write_note(comp_dir, note.title, note.body)
@@ -103,6 +125,7 @@ async def create_take(
     name: str = "take",
     ext: str = ".wav",
     audio: Path = Depends(audio_dir),
+    _: None = Depends(require_writable),
 ) -> dict:
     """Store an audio take (raw bytes in the body) in the git-ignored audio/ dir.
 
@@ -121,6 +144,7 @@ async def create_take(
 def create_session(
     note: NotePayload,
     sess_dir: Path = Depends(sessions_dir),
+    _: None = Depends(require_writable),
 ) -> dict:
     """Save a Studio session note into recording/sessions/; return where it landed."""
     path = write_note(sess_dir, note.title, note.body)
@@ -131,6 +155,7 @@ def create_session(
 def create_riff(
     note: NotePayload,
     riff_dir: Path = Depends(riffs_dir),
+    _: None = Depends(require_writable),
 ) -> dict:
     """Capture a riff idea into riffs/; return where it landed."""
     path = write_note(riff_dir, note.title, note.body)
@@ -141,6 +166,7 @@ def create_riff(
 def create_preset(
     note: NotePayload,
     pdir: Path = Depends(presets_dir),
+    _: None = Depends(require_writable),
 ) -> dict:
     """Save an effect-chain preset (Markdown) into production/effects/."""
     path = write_note(pdir, note.title, note.body)
@@ -175,6 +201,7 @@ def tabs_search(
 def create_tab(
     note: TabNotePayload,
     instr_root: Path = Depends(instruments_dir),
+    _: None = Depends(require_writable),
 ) -> dict:
     """Save a tab *reference* (Markdown, links out) into instruments/<instrument>/tabs/.
 
@@ -213,7 +240,13 @@ app.mount("/static", NoCacheStaticFiles(directory=WEB_DIR), name="static")
 
 
 def run() -> None:
-    """Console-script entry point: `uv run benten`."""
+    """Console-script entry point: `uv run benten`.
+
+    Local default stays 127.0.0.1:8788 (private, per PRD §2). A host like Railway
+    overrides via env: HOST=0.0.0.0 to accept traffic, PORT from the platform.
+    """
     import uvicorn
 
-    uvicorn.run("benten.server:app", host="127.0.0.1", port=8788, reload=False)
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "8788"))
+    uvicorn.run("benten.server:app", host=host, port=port, reload=False)
