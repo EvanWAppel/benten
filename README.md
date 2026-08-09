@@ -73,7 +73,11 @@ behind reads fine with the server off, like everything else in the drawers.
 The **Effects** module is a small pedalboard. Wire up a chain of ready-made blocks
 — distortion, filter, delay, reverb — reorder them, turn the knobs, and load one of
 your Studio takes to hear it run through the chain, with an A/B bypass to check your
-work against the dry signal. When a chain earns its keep, name it and save it: what
+work against the dry signal. Each block has the knobs a player actually reaches for:
+distortion picks a curve (soft, hard, fuzz) and rolls off the fizz with a tone
+control; the filter opens up shelving and peaking modes alongside the sweeps; the
+delay darkens its own repeats as they trail off; and the reverb sets a pre-delay
+before the tail and damps how bright that tail rings. When a chain earns its keep, name it and save it: what
 lands in `production/effects/` is a plain-Markdown preset — a little table of blocks
 and their settings you can read and tweak by hand — that loads straight back into the
 rack. It's a bench pedalboard for finding a sound, not a mix; the real mixing still

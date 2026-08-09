@@ -5,15 +5,27 @@
 
 import { normalizeChain } from "./effects-model.js";
 
-// A classic waveshaper curve — `drive` (0..1) sets how hard it bends.
-function distortionCurve(drive) {
+// Waveshaper curves, one per `type`. `drive` (0..1) sets how hard each bends.
+//   soft — the classic arctan-ish bend: warm, rounds the peaks.
+//   hard — flat clip against a drive-shrinking threshold: aggressive, square-ish.
+//   fuzz — a steep tanh, asymmetric (positive half hotter) for a gritty octave-y bite.
+function distortionCurve(drive, type = "soft") {
   const k = drive * 100;
   const n = 2048;
   const curve = new Float32Array(n);
   const deg = Math.PI / 180;
   for (let i = 0; i < n; i++) {
     const x = (i * 2) / n - 1;
-    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+    if (type === "hard") {
+      const t = 1 - drive * 0.9; // threshold shrinks with drive: 1.0 → 0.1
+      curve[i] = Math.max(-t, Math.min(t, x)) / t; // clip, then normalize to ±1
+    } else if (type === "fuzz") {
+      const g = 1 + k * 0.5;
+      const bias = x < 0 ? 0.7 : 1; // asymmetry — quieter on the negative half
+      curve[i] = Math.tanh(x * g) * bias;
+    } else {
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x)); // soft
+    }
   }
   return curve;
 }
@@ -35,48 +47,64 @@ function impulseResponse(ctx, size) {
 
 // Each builder returns { input, output } — the endpoints to wire into the chain.
 const BUILDERS = {
-  distortion(ctx, { drive }) {
+  distortion(ctx, { drive, tone, level, type }) {
     const ws = ctx.createWaveShaper();
-    ws.curve = distortionCurve(drive);
+    ws.curve = distortionCurve(drive, type);
     ws.oversample = "2x";
-    return { input: ws, output: ws };
+    const lp = ctx.createBiquadFilter(); // tame the fizz the shaper adds up top
+    lp.type = "lowpass";
+    lp.frequency.value = tone;
+    const out = ctx.createGain(); // makeup: shaping changes loudness a lot
+    out.gain.value = level;
+
+    ws.connect(lp).connect(out);
+    return { input: ws, output: out };
   },
 
-  filter(ctx, { mode, freq, q }) {
+  filter(ctx, { mode, freq, q, gain }) {
     const f = ctx.createBiquadFilter();
     f.type = mode;
     f.frequency.value = freq;
     f.Q.value = q;
+    f.gain.value = gain; // native node ignores gain for lowpass/highpass/bandpass/notch
     return { input: f, output: f };
   },
 
-  delay(ctx, { time, feedback, mix }) {
+  delay(ctx, { time, feedback, tone, mix }) {
     const input = ctx.createGain();
     const output = ctx.createGain();
     const delay = ctx.createDelay(2.0);
     delay.delayTime.value = time;
     const fb = ctx.createGain();
     fb.gain.value = feedback;
+    const damp = ctx.createBiquadFilter(); // darken each repeat — tape/analog feel
+    damp.type = "lowpass";
+    damp.frequency.value = tone;
     const wet = ctx.createGain();
     wet.gain.value = mix;
 
     input.connect(output); // dry
     input.connect(delay);
-    delay.connect(fb).connect(delay); // feedback loop
+    delay.connect(damp).connect(fb).connect(delay); // feedback loop, filtered each pass
     delay.connect(wet).connect(output); // wet
     return { input, output };
   },
 
-  reverb(ctx, { size, mix }) {
+  reverb(ctx, { size, predelay, tone, mix }) {
     const input = ctx.createGain();
     const output = ctx.createGain();
+    const pre = ctx.createDelay(1.0); // gap between the dry note and its tail
+    pre.delayTime.value = predelay;
     const conv = ctx.createConvolver();
     conv.buffer = impulseResponse(ctx, size);
+    const damp = ctx.createBiquadFilter(); // soften a brittle tail
+    damp.type = "lowpass";
+    damp.frequency.value = tone;
     const wet = ctx.createGain();
     wet.gain.value = mix;
 
     input.connect(output); // dry
-    input.connect(conv).connect(wet).connect(output); // wet
+    input.connect(pre).connect(conv).connect(damp).connect(wet).connect(output); // wet
     return { input, output };
   },
 };
