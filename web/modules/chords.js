@@ -3,6 +3,7 @@
 
 import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
+import { patternsFor, chordsForPattern } from "./patterns.js";
 import { fretboardSVG } from "./fretboard.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
@@ -67,6 +68,17 @@ function render() {
       <div class="palette" id="palette">
         ${paletteChords()
           .map((c) => `<button class="chip add" data-add="${c}">${c}</button>`)
+          .join("")}
+      </div>
+
+      <div class="patterns" id="patterns">
+        <span class="patterns-label muted">patterns</span>
+        ${patternsFor(state.mode)
+          .map((p) => {
+            const chords = chordsForPattern(p.id, state.tonic, state.mode);
+            return `<button class="chip pattern" data-pattern="${p.id}"
+                            title="${p.note} — ${chords.join(" · ")}">${p.name}</button>`;
+          })
           .join("")}
       </div>
 
@@ -219,6 +231,10 @@ function wire() {
     b.addEventListener("click", () => addChord(b.dataset.add)),
   );
 
+  root.querySelectorAll("[data-pattern]").forEach((b) =>
+    b.addEventListener("click", () => applyPattern(b.dataset.pattern)),
+  );
+
   root.querySelector("#free-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const val = root.querySelector("#free").value.trim();
@@ -328,6 +344,18 @@ async function saveProgression() {
   } catch (e) {
     onStatus(`save failed: ${e.message}`);
   }
+}
+
+// Fill the progression from a named pattern, expanded for the current key + mode.
+// This replaces whatever's there — a pattern is a whole progression, not an add.
+function applyPattern(id) {
+  const chords = chordsForPattern(id, state.tonic, state.mode);
+  if (!chords.length) return;
+  state.progression = chords;
+  state.active = null; // the old fretboard pick no longer belongs to this progression
+  const pattern = patternsFor(state.mode).find((p) => p.id === id);
+  onStatus(`loaded ${pattern.name} — ${chords.join(" · ")}`);
+  render();
 }
 
 function addChord(symbol) {

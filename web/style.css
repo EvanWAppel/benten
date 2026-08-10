@@ -93,6 +93,11 @@ button:hover { border-color: var(--accent); }
 }
 .chip.add { color: var(--accent); }
 
+.patterns { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0 0 0.75rem; }
+.patterns-label { font-size: 0.8rem; text-transform: lowercase; margin-right: 0.1rem; }
+.chip.pattern { cursor: pointer; font-size: 0.85rem; padding: 0.25rem 0.65rem; }
+.chip.pattern:hover { border-color: var(--accent); color: var(--accent); }
+
 .progression { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .progression .empty { border: none; background: none; padding: 0.3rem 0; }
 .chip.prog .sym { font-weight: 600; }
