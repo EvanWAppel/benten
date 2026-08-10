@@ -74,6 +74,10 @@ Convention: one task = one small, verifiable change. Keep them that size.
       colour, keyed off the interval *number* so a 5th reads the same in every scale
       (pentatonic ♭3/♭7 share the 3/7 colours). Chord tones keep a bright ring; the
       legend maps colour → degree. `degreeLabel`/`scaleLegend` in `fretboard.js`, tested.
+      *(Palette themed to shades of blue; chord tones ringed white.)*
+- [x] Hover tooltips on the diagram circles: each scale-board note shows its note +
+      scale degree (+ "chord tone"); each chord-box finger dot shows its note + fret.
+      Native SVG `<title>` — no JS, works on hover.
 
 ## Group G — Save to composition/ (MVP)
 
