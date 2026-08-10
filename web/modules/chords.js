@@ -4,7 +4,7 @@
 import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
 import { patternsFor, chordsForPattern } from "./patterns.js";
-import { fretboardSVG, chordBoxSVG } from "./fretboard.js";
+import { fretboardSVG, chordBoxSVG, scaleLegend } from "./fretboard.js";
 import { chordShape } from "./chordshape.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
@@ -193,14 +193,16 @@ function renderFretboard() {
     return `<p class="muted hint">Pick a scale above to see it on the fretboard.</p>`;
   }
   const { scale, chordSymbol } = state.active;
+  const degrees = scaleLegend(scale)
+    .map((d) => `<span class="deg"><span class="key-dot fb-deg-${d.num}"></span>${d.label}</span>`)
+    .join("");
   return `
     <div class="fretboard-wrap">
       <h4>${chordSymbol} · ${scale} <span class="on-guitar muted">on guitar</span></h4>
       ${fretboardSVG({ scale, chordSymbol })}
       <p class="legend muted">
-        <span class="key-dot fb-root"></span> root
-        <span class="key-dot fb-chord"></span> chord tone
-        <span class="key-dot fb-scale"></span> scale note
+        ${degrees}
+        <span class="deg ring"><span class="key-dot is-chord"></span>${chordSymbol} tone</span>
       </p>
     </div>`;
 }

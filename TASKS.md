@@ -70,6 +70,10 @@ Convention: one task = one small, verifiable change. Keep them that size.
       from the chord tones + tuning. Open shapes drawn at the nut, barre shapes with
       a "Nfr" label. Pure voicing search in `chordshape.js` (unit-tested; the common
       open chords resolve to their textbook shapes), rendered by `chordBoxSVG`.
+- [x] Colour the scale board by interval: each scale degree (1–7) gets its own
+      colour, keyed off the interval *number* so a 5th reads the same in every scale
+      (pentatonic ♭3/♭7 share the 3/7 colours). Chord tones keep a bright ring; the
+      legend maps colour → degree. `degreeLabel`/`scaleLegend` in `fretboard.js`, tested.
 
 ## Group G — Save to composition/ (MVP)
 

@@ -15,10 +15,16 @@ export function fretboardSVG({
   const sc = Scale.get(scale);
   if (sc.empty) return "";
 
-  // chroma (0–11) → spelled note name, taken from the scale's own spelling.
+  // chroma (0–11) → spelled note name and scale-degree number, from the scale's own
+  // spelling. Degree keys off the interval number (1–7), so a fifth is coloured the
+  // same in every scale and a pentatonic's ♭3/♭7 share the 3/7 colours.
   const spelling = new Map();
-  sc.notes.forEach((n) => spelling.set(Note.chroma(n), n));
-  const rootChroma = Note.chroma(sc.tonic || sc.notes[0]);
+  const degreeOf = new Map();
+  sc.notes.forEach((n, i) => {
+    const chroma = Note.chroma(n);
+    spelling.set(chroma, n);
+    degreeOf.set(chroma, parseInt(sc.intervals[i], 10) || i + 1);
+  });
   const chordChroma = new Set(
     (chordSymbol ? Chord.get(chordSymbol).notes : []).map((n) => Note.chroma(n)),
   );
@@ -62,7 +68,8 @@ export function fretboardSVG({
     for (let f = 0; f <= frets; f++) {
       const pc = (open + f) % 12;
       if (!spelling.has(pc)) continue;
-      const cls = pc === rootChroma ? "fb-root" : chordChroma.has(pc) ? "fb-chord" : "fb-scale";
+      // Colour by scale degree; ring the notes that belong to the current chord.
+      const cls = `fb-deg-${degreeOf.get(pc)}${chordChroma.has(pc) ? " is-chord" : ""}`;
       const cx = xCell(f);
       const cy = y(s);
       p.push(`<circle cx="${cx}" cy="${cy}" r="10" class="fb-dot ${cls}"/>`);
@@ -75,6 +82,25 @@ export function fretboardSVG({
   }
 
   return `<svg viewBox="0 0 ${width} ${height}" class="fretboard" role="img" aria-label="${scale} on a guitar fretboard">${p.join("")}</svg>`;
+}
+
+// A short scale-degree label for an interval, e.g. "1P"→"1", "3m"→"♭3", "4A"→"♯4".
+export function degreeLabel(interval) {
+  const num = interval.match(/\d+/)?.[0] ?? "";
+  const quality = interval.replace(/\d+/g, "");
+  const acc = quality === "m" || quality === "d" ? "♭" : quality === "A" ? "♯" : "";
+  return acc + num;
+}
+
+// The legend for a scale: one { num, label } per degree, in scale order — pairs with
+// the fb-deg-N colours the fretboard paints, so the key reads 1 ♭3 4 5 ♭7, etc.
+export function scaleLegend(scale) {
+  const sc = Scale.get(scale);
+  if (sc.empty) return [];
+  return sc.notes.map((n, i) => {
+    const interval = sc.intervals[i] || "";
+    return { num: parseInt(interval, 10) || i + 1, label: degreeLabel(interval) };
+  });
 }
 
 // A compact chord-box diagram — the vertical grid a player reads to fret one chord.
