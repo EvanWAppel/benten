@@ -137,14 +137,16 @@ button:hover { border-color: var(--accent); }
 .fb-dot.fb-chord { fill: var(--accent); }
 .fb-dot.fb-root { fill: #e0b15a; }
 
-/* scale-degree colours — one per interval (1–7); shared by board dots and legend */
-.fb-deg-1 { fill: #e0b15a; background: #e0b15a; }
-.fb-deg-2 { fill: #6fb7c9; background: #6fb7c9; }
-.fb-deg-3 { fill: #7ec87e; background: #7ec87e; }
-.fb-deg-4 { fill: #c98fd6; background: #c98fd6; }
-.fb-deg-5 { fill: #e0705a; background: #e0705a; }
-.fb-deg-6 { fill: #e6d16f; background: #e6d16f; }
-.fb-deg-7 { fill: #6f8fe0; background: #6f8fe0; }
+/* scale-degree colours — one per interval (1–7); shared by board dots and legend.
+   Themed by function: the triad (1·3·5) in reds, the 7th in pink, the tensions
+   (2·4·6) in greens — distinct shades within each family so degrees stay tellable. */
+.fb-deg-1 { fill: #e23b3b; background: #e23b3b; } /* root — vivid red */
+.fb-deg-3 { fill: #c9564e; background: #c9564e; } /* 3rd — brick red */
+.fb-deg-5 { fill: #f5847a; background: #f5847a; } /* 5th — salmon */
+.fb-deg-7 { fill: #ef9bce; background: #ef9bce; } /* 7th — pink */
+.fb-deg-2 { fill: #3fa05a; background: #3fa05a; } /* 2nd — forest green */
+.fb-deg-4 { fill: #6cc47c; background: #6cc47c; } /* 4th — medium green */
+.fb-deg-6 { fill: #a9e08f; background: #a9e08f; } /* 6th — light green */
 /* a note in the current chord gets a bright ring around its degree colour */
 .fb-dot.is-chord { stroke: #f2efe9; stroke-width: 2.5; }
 
