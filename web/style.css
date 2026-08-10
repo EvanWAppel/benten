@@ -147,8 +147,14 @@ button:hover { border-color: var(--accent); }
 .fb-deg-5 { fill: #83b9ea; background: #83b9ea; }
 .fb-deg-6 { fill: #aad2f2; background: #aad2f2; }
 .fb-deg-7 { fill: #cfe6f9; background: #cfe6f9; } /* 7th — pale blue */
-/* a note in the current chord gets a bright ring around its degree colour */
+/* a note in the current chord gets a ring; the ring's intensity marks its chord
+   role — root brightest/thickest, then 3rd, 5th, 7th, descending. */
 .fb-dot.is-chord { stroke: #f2efe9; stroke-width: 2.5; }
+.fb-dot.is-chord-1 { stroke: #ffffff; stroke-width: 3; }
+.fb-dot.is-chord-3 { stroke: #ced5dd; stroke-width: 2.6; }
+.fb-dot.is-chord-5 { stroke: #98a0ab; stroke-width: 2.2; }
+.fb-dot.is-chord-7 { stroke: #66707a; stroke-width: 1.9; }
+.fb-dot.is-chord-2, .fb-dot.is-chord-4, .fb-dot.is-chord-6 { stroke: #7e8790; stroke-width: 2; }
 
 .fb-label { fill: #fff; stroke: #12141a; stroke-width: 2.2; paint-order: stroke;
   font-size: 9px; font-weight: 600; text-anchor: middle; font-family: var(--font); }
@@ -166,11 +172,16 @@ button:hover { border-color: var(--accent); }
 .shape-meta { margin: 0.4rem 0 0; font-size: 0.85rem; }
 .shape-meta .mk { display: inline-block; margin: 0 0.1rem 0 0.4rem; color: var(--ink); }
 
-.legend { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.legend { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin: 0.3rem 0 0; }
 .legend .deg { display: inline-flex; align-items: center; gap: 0.25rem; }
-.legend .deg.ring { margin-left: 0.4rem; }
+.legend .legend-label { font-size: 0.78rem; opacity: 0.7; min-width: 3.4rem; }
 .key-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: middle; }
 .key-dot.is-chord { background: #2f3b40; border: 2px solid #f2efe9; }
+.key-dot.is-chord-1 { border-color: #ffffff; }
+.key-dot.is-chord-3 { border-color: #ced5dd; }
+.key-dot.is-chord-5 { border-color: #98a0ab; }
+.key-dot.is-chord-7 { border-color: #66707a; }
+.key-dot.is-chord-2, .key-dot.is-chord-4, .key-dot.is-chord-6 { border-color: #7e8790; }
 .key-dot.fb-scale { background: #2f3b40; border: 1.5px solid var(--accent); }
 .key-dot.fb-chord { background: var(--accent); }
 .key-dot.fb-root { background: #e0b15a; }

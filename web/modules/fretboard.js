@@ -27,9 +27,15 @@ export function fretboardSVG({
     degreeOf.set(chroma, parseInt(sc.intervals[i], 10) || i + 1);
     labelOf.set(chroma, degreeLabel(sc.intervals[i] || ""));
   });
-  const chordChroma = new Set(
-    (chordSymbol ? Chord.get(chordSymbol).notes : []).map((n) => Note.chroma(n)),
-  );
+  // chroma → this note's degree within the current chord (1, 3, 5, 7, …), so the
+  // ring can colour by chord role: root brightest, then 3rd, 5th, 7th, descending.
+  const chordDegOf = new Map();
+  const chord = chordSymbol ? Chord.get(chordSymbol) : null;
+  if (chord && !chord.empty) {
+    chord.notes.forEach((n, i) =>
+      chordDegOf.set(Note.chroma(n), parseInt(chord.intervals[i], 10) || 0),
+    );
+  }
 
   const fretW = 54;
   const gap = 30;
@@ -70,12 +76,14 @@ export function fretboardSVG({
     for (let f = 0; f <= frets; f++) {
       const pc = (open + f) % 12;
       if (!spelling.has(pc)) continue;
-      // Colour by scale degree; ring the notes that belong to the current chord.
-      const cls = `fb-deg-${degreeOf.get(pc)}${chordChroma.has(pc) ? " is-chord" : ""}`;
+      // Colour by scale degree; ring chord tones, the ring coloured by chord role.
+      const inChord = chordDegOf.has(pc);
+      const ringDeg = inChord ? ((chordDegOf.get(pc) - 1) % 7) + 1 : 0; // fold 9→2, 13→6
+      const cls = `fb-deg-${degreeOf.get(pc)}${inChord ? ` is-chord is-chord-${ringDeg}` : ""}`;
       const cx = xCell(f);
       const cy = y(s);
-      // Hover tooltip: note, its scale degree, and whether it's in the current chord.
-      const tip = `${spelling.get(pc)} · degree ${labelOf.get(pc)}${chordChroma.has(pc) ? " · chord tone" : ""}`;
+      // Hover tooltip: note, its scale degree, and its role in the current chord.
+      const tip = `${spelling.get(pc)} · degree ${labelOf.get(pc)}${inChord ? ` · chord ${ordinal(chordDegOf.get(pc))}` : ""}`;
       p.push(`<circle cx="${cx}" cy="${cy}" r="10" class="fb-dot ${cls}"><title>${tip}</title></circle>`);
       p.push(`<text x="${cx}" y="${cy + 3.5}" class="fb-label">${spelling.get(pc)}</text>`);
     }
@@ -86,6 +94,30 @@ export function fretboardSVG({
   }
 
   return `<svg viewBox="0 0 ${width} ${height}" class="fretboard" role="img" aria-label="${scale} on a guitar fretboard">${p.join("")}</svg>`;
+}
+
+// A chord degree as an ordinal role: 1→"root", 3→"3rd", 7→"7th", 9→"9th".
+export function ordinal(n) {
+  if (n === 1) return "root";
+  const rem10 = n % 10;
+  const rem100 = n % 100;
+  const suffix =
+    rem10 === 1 && rem100 !== 11 ? "st"
+    : rem10 === 2 && rem100 !== 12 ? "nd"
+    : rem10 === 3 && rem100 !== 13 ? "rd"
+    : "th";
+  return `${n}${suffix}`;
+}
+
+// The ring key for a chord: one { deg, label } per chord tone, in chord order, so the
+// legend can show which ring intensity means root vs 3rd vs 5th vs 7th.
+export function chordRingLegend(symbol) {
+  const c = Chord.get(symbol);
+  if (c.empty) return [];
+  return c.notes.map((n, i) => {
+    const num = parseInt(c.intervals[i], 10) || 0;
+    return { deg: ((num - 1) % 7) + 1, label: ordinal(num) };
+  });
 }
 
 // A short scale-degree label for an interval, e.g. "1P"→"1", "3m"→"♭3", "4A"→"♯4".
