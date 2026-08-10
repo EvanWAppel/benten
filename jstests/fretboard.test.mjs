@@ -2,9 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  degreeLabel, scaleLegend, fretboardSVG, chordBoxSVG, ordinal, chordRingLegend,
-} from "../web/modules/fretboard.js";
+import { degreeLabel, scaleLegend, fretboardSVG, chordBoxSVG } from "../web/modules/fretboard.js";
 import { chordShape } from "../web/modules/chordshape.js";
 
 test("degreeLabel spells intervals with the right accidental", () => {
@@ -34,34 +32,11 @@ test("an unknown scale legends empty", () => {
   assert.deepEqual(scaleLegend("not a scale"), []);
 });
 
-test("ordinal names chord roles", () => {
-  assert.equal(ordinal(1), "root");
-  assert.equal(ordinal(3), "3rd");
-  assert.equal(ordinal(5), "5th");
-  assert.equal(ordinal(7), "7th");
-  assert.equal(ordinal(9), "9th");
-});
-
-test("chordRingLegend folds chord degrees into ring intensities", () => {
-  assert.deepEqual(chordRingLegend("C"), [
-    { deg: 1, label: "root" },
-    { deg: 3, label: "3rd" },
-    { deg: 5, label: "5th" },
-  ]);
-  // a 9th chord folds the 9 back to the 2-ring but still reads "9th"
-  const g9 = chordRingLegend("C9");
-  assert.ok(g9.some((r) => r.label === "9th" && r.deg === 2));
-});
-
-test("the scale board rings chord tones by role and tooltips every note", () => {
+test("the scale board colours by degree and tooltips every note", () => {
   const svg = fretboardSVG({ scale: "C major", chordSymbol: "C" });
-  // C is the chord root → root ring; E the 3rd; G the 5th
-  assert.match(svg, /class="fb-dot fb-deg-1 is-chord is-chord-1"/);
-  assert.match(svg, /class="fb-dot fb-deg-3 is-chord is-chord-3"/);
-  assert.match(svg, /class="fb-dot fb-deg-5 is-chord is-chord-5"/);
-  assert.match(svg, /<title>C · degree 1 · chord root<\/title>/);
-  assert.match(svg, /<title>G · degree 5 · chord 5th<\/title>/);
-  assert.match(svg, /<title>D · degree 2<\/title>/); // a non-chord scale note, no ring
+  assert.match(svg, /class="fb-dot fb-deg-1 is-chord"/); // C is a chord tone → ringed
+  assert.match(svg, /<title>C · degree 1 · chord tone<\/title>/);
+  assert.match(svg, /<title>D · degree 2<\/title>/); // a non-chord scale note
 });
 
 test("chord-box finger dots carry a note tooltip", () => {

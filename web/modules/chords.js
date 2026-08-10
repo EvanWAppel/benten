@@ -4,7 +4,7 @@
 import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
 import { patternsFor, chordsForPattern } from "./patterns.js";
-import { fretboardSVG, chordBoxSVG, scaleLegend, chordRingLegend } from "./fretboard.js";
+import { fretboardSVG, chordBoxSVG, scaleLegend } from "./fretboard.js";
 import { chordShape } from "./chordshape.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
@@ -196,15 +196,14 @@ function renderFretboard() {
   const degrees = scaleLegend(scale)
     .map((d) => `<span class="deg"><span class="key-dot fb-deg-${d.num}"></span>${d.label}</span>`)
     .join("");
-  const rings = chordRingLegend(chordSymbol)
-    .map((r) => `<span class="deg"><span class="key-dot is-chord is-chord-${r.deg}"></span>${r.label}</span>`)
-    .join("");
   return `
     <div class="fretboard-wrap">
       <h4>${chordSymbol} · ${scale} <span class="on-guitar muted">on guitar</span></h4>
       ${fretboardSVG({ scale, chordSymbol })}
-      <p class="legend muted"><span class="legend-label">scale</span> ${degrees}</p>
-      <p class="legend muted"><span class="legend-label">${chordSymbol} ring</span> ${rings}</p>
+      <p class="legend muted">
+        ${degrees}
+        <span class="deg ring"><span class="key-dot is-chord"></span>${chordSymbol} tone</span>
+      </p>
     </div>`;
 }
 

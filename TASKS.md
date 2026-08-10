@@ -74,15 +74,10 @@ Convention: one task = one small, verifiable change. Keep them that size.
       colour, keyed off the interval *number* so a 5th reads the same in every scale
       (pentatonic ♭3/♭7 share the 3/7 colours). Chord tones keep a bright ring; the
       legend maps colour → degree. `degreeLabel`/`scaleLegend` in `fretboard.js`, tested.
-      *(Palette themed to shades of blue.)*
-- [x] Ring chord tones by their role in the chord: the ring's colour marks the role
-      in warm hues that contrast the blue fills — root orange, 3rd red, 5th yellow,
-      7th magenta (extensions purple), root thickest. Compound tones fold (9→2-ring,
-      13→6-ring). Second legend row keys the ring colours. `ordinal`/`chordRingLegend`
-      in `fretboard.js`, tested.
-- [x] Hover tooltips on the diagram circles: each scale-board note shows its note,
-      scale degree, and its role in the chord (root/3rd/5th/7th); each chord-box
-      finger dot shows its note + fret. Native SVG `<title>` — no JS, works on hover.
+      *(Palette themed to shades of blue; chord tones ringed white.)*
+- [x] Hover tooltips on the diagram circles: each scale-board note shows its note +
+      scale degree (+ "chord tone"); each chord-box finger dot shows its note + fret.
+      Native SVG `<title>` — no JS, works on hover.
 
 ## Group G — Save to composition/ (MVP)
 
