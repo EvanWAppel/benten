@@ -65,6 +65,11 @@ Convention: one task = one small, verifiable change. Keep them that size.
 - [x] Highlight chord tones vs. the rest of the scale distinctly.
 - [x] Toggle which suggested scale is shown on the neck.
 - [x] Label notes / degrees on the diagram. *(note names; degree toggle deferred)*
+- [x] Chord shapes: per-chord ▦ toggle shows a compact chord-box diagram (how to
+      fret an unfamiliar chord) — one low, playable, root-in-bass voicing computed
+      from the chord tones + tuning. Open shapes drawn at the nut, barre shapes with
+      a "Nfr" label. Pure voicing search in `chordshape.js` (unit-tested; the common
+      open chords resolve to their textbook shapes), rendered by `chordBoxSVG`.
 
 ## Group G — Save to composition/ (MVP)
 

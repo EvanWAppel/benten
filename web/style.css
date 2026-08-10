@@ -139,6 +139,18 @@ button:hover { border-color: var(--accent); }
 .fb-label { fill: var(--ink); font-size: 9px; text-anchor: middle; font-family: var(--font); }
 .fb-fretnum { fill: var(--muted); font-size: 10px; text-anchor: middle; font-family: var(--font); }
 
+/* chord-shape box */
+.chip.prog .ops button.is-showing { color: var(--accent); border-color: var(--accent); }
+.chord-shape { margin: 0.5rem 0 1rem; }
+.chord-shape h4 { margin: 0 0 0.5rem; font-weight: 600; }
+.chord-shape h4 .muted { font-weight: 400; font-size: 0.85rem; }
+.chord-box { display: block; width: 150px; height: auto; background: #10131a; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.cb-pos { fill: var(--muted); font-size: 11px; text-anchor: end; font-family: var(--font); }
+.fb-marker { fill: var(--muted); font-size: 13px; text-anchor: middle; font-family: var(--font); }
+.fb-open { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.shape-meta { margin: 0.4rem 0 0; font-size: 0.85rem; }
+.shape-meta .mk { display: inline-block; margin: 0 0.1rem 0 0.4rem; color: var(--ink); }
+
 .legend { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; }
 .key-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-left: 0.6rem; vertical-align: middle; }
 .key-dot.fb-scale { background: #2f3b40; border: 1.5px solid var(--accent); }

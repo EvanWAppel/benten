@@ -4,7 +4,8 @@
 import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
 import { patternsFor, chordsForPattern } from "./patterns.js";
-import { fretboardSVG } from "./fretboard.js";
+import { fretboardSVG, chordBoxSVG } from "./fretboard.js";
+import { chordShape } from "./chordshape.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
 import { playChord, ProgressionPlayer } from "./audio.js";
@@ -16,6 +17,7 @@ const state = {
   mode: "major", // "major" | "minor"
   progression: [], // chord symbols, in order
   active: null, // { scale, chordSymbol } currently shown on the fretboard
+  shape: null, // chord symbol whose fingering box is currently shown, if any
   // practice-loop settings
   tempo: 90,
   beatsPerBar: 4,
@@ -49,6 +51,8 @@ function isValid(symbol) {
 // --- rendering ------------------------------------------------------------
 
 function render() {
+  // Drop a shape box whose chord is no longer in the progression (e.g. removed).
+  if (state.shape && !state.progression.includes(state.shape)) state.shape = null;
   root.innerHTML = `
     <section class="module-view chords">
       <h2>Chords &amp; scales</h2>
@@ -97,6 +101,7 @@ function render() {
         }
       </ol>
 
+      ${renderShape()}
       ${state.progression.length ? renderPractice() : ""}
       ${state.progression.length ? renderSuggestions() : ""}
       ${state.progression.length ? renderSave() : ""}
@@ -203,16 +208,35 @@ function renderFretboard() {
 function chordChip(sym, i) {
   const invalid = isValid(sym) ? "" : "is-invalid";
   const title = isValid(sym) ? "" : 'title="unrecognized chord"';
+  const showing = state.shape === sym ? "is-showing" : "";
   return `
     <li class="chip prog ${invalid}" ${title}>
       <span class="sym">${sym}</span>
       <span class="ops">
         ${isValid(sym) ? `<button data-hear="${sym}" aria-label="hear chord">♪</button>` : ""}
+        ${isValid(sym) ? `<button class="${showing}" data-shape="${sym}" aria-label="show chord shape" title="how to play it">▦</button>` : ""}
         <button data-move="${i}" data-dir="-1" aria-label="move left">‹</button>
         <button data-move="${i}" data-dir="1" aria-label="move right">›</button>
         <button data-remove="${i}" aria-label="remove">×</button>
       </span>
     </li>`;
+}
+
+// The chord-shape panel: a box diagram for the chord the player asked to see.
+function renderShape() {
+  if (!state.shape) return "";
+  const shape = chordShape(state.shape);
+  if (!shape.valid) return "";
+  const fingering = shape.voicing.map((f) => (f === -1 ? "x" : f)).join(" ");
+  const pos = shape.baseFret === 0 ? "open position" : `from fret ${shape.baseFret}`;
+  return `
+    <div class="chord-shape">
+      <h4>${state.shape} <span class="muted">— how to play it</span></h4>
+      ${chordBoxSVG(shape)}
+      <p class="shape-meta muted">low → high: <code>${fingering}</code> · ${pos}
+        · notes ${shape.notes.join(", ")}
+        · <span class="mk">×</span> mute <span class="mk">○</span> open</p>
+    </div>`;
 }
 
 // --- events ---------------------------------------------------------------
@@ -270,6 +294,14 @@ function wire() {
   // click-to-hear on a progression chip
   root.querySelectorAll("[data-hear]").forEach((b) =>
     b.addEventListener("click", () => playChord(b.dataset.hear)),
+  );
+
+  // show/hide the chord-shape box for a chip (toggles off when clicked again)
+  root.querySelectorAll("[data-shape]").forEach((b) =>
+    b.addEventListener("click", () => {
+      state.shape = state.shape === b.dataset.shape ? null : b.dataset.shape;
+      render();
+    }),
   );
 
   // practice-loop transport
