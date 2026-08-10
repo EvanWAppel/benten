@@ -45,6 +45,10 @@ Convention: one task = one small, verifiable change. Keep them that size.
 - [x] Free-text chord input parsing symbols (`Am7`, `D9`, `Cmaj7`) via `tonal.js`.
 - [x] Progression editor: ordered list of chords, reorderable and removable.
 - [x] Handle unparseable / out-of-key chords gracefully (flag, don't crash).
+- [x] Common progression patterns: pick a named pattern (I–V–vi–IV, ii–V–I,
+      12-bar blues, minor pop/vamp/jazz, …) and fill the progression with its
+      chords, expanded for the current key + mode. Pure catalog + degree→chord
+      expansion in `patterns.js`, unit-tested; chip row in the Chords UI.
 
 ## Group E — Chord-scale suggestions (MVP)
 
