@@ -65,6 +65,19 @@ Convention: one task = one small, verifiable change. Keep them that size.
 - [x] Highlight chord tones vs. the rest of the scale distinctly.
 - [x] Toggle which suggested scale is shown on the neck.
 - [x] Label notes / degrees on the diagram. *(note names; degree toggle deferred)*
+- [x] Chord shapes: per-chord ▦ toggle shows a compact chord-box diagram (how to
+      fret an unfamiliar chord) — one low, playable, root-in-bass voicing computed
+      from the chord tones + tuning. Open shapes drawn at the nut, barre shapes with
+      a "Nfr" label. Pure voicing search in `chordshape.js` (unit-tested; the common
+      open chords resolve to their textbook shapes), rendered by `chordBoxSVG`.
+- [x] Colour the scale board by interval: each scale degree (1–7) gets its own
+      colour, keyed off the interval *number* so a 5th reads the same in every scale
+      (pentatonic ♭3/♭7 share the 3/7 colours). Chord tones keep a bright ring; the
+      legend maps colour → degree. `degreeLabel`/`scaleLegend` in `fretboard.js`, tested.
+      *(Palette themed to shades of blue; chord tones ringed white.)*
+- [x] Hover tooltips on the diagram circles: each scale-board note shows its note +
+      scale degree (+ "chord tone"); each chord-box finger dot shows its note + fret.
+      Native SVG `<title>` — no JS, works on hover.
 
 ## Group G — Save to composition/ (MVP)
 

@@ -136,11 +136,41 @@ button:hover { border-color: var(--accent); }
 .fb-dot.fb-scale { fill: #2f3b40; stroke: var(--accent); stroke-width: 1.5; }
 .fb-dot.fb-chord { fill: var(--accent); }
 .fb-dot.fb-root { fill: #e0b15a; }
-.fb-label { fill: var(--ink); font-size: 9px; text-anchor: middle; font-family: var(--font); }
+
+/* scale-degree colours — one per interval (1–7); shared by board dots and legend.
+   A single blue hue in ascending shades: darkest at the root, lightening up the
+   scale, so the board reads calm and the degrees still step apart. */
+.fb-deg-1 { fill: #1b4f9c; background: #1b4f9c; } /* root — deep blue */
+.fb-deg-2 { fill: #2769c0; background: #2769c0; }
+.fb-deg-3 { fill: #3f86d4; background: #3f86d4; }
+.fb-deg-4 { fill: #5fa0e0; background: #5fa0e0; }
+.fb-deg-5 { fill: #83b9ea; background: #83b9ea; }
+.fb-deg-6 { fill: #aad2f2; background: #aad2f2; }
+.fb-deg-7 { fill: #cfe6f9; background: #cfe6f9; } /* 7th — pale blue */
+/* a note in the current chord gets a bright ring around its degree colour */
+.fb-dot.is-chord { stroke: #f2efe9; stroke-width: 2.5; }
+
+.fb-label { fill: #fff; stroke: #12141a; stroke-width: 2.2; paint-order: stroke;
+  font-size: 9px; font-weight: 600; text-anchor: middle; font-family: var(--font); }
 .fb-fretnum { fill: var(--muted); font-size: 10px; text-anchor: middle; font-family: var(--font); }
 
-.legend { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; }
-.key-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-left: 0.6rem; vertical-align: middle; }
+/* chord-shape box */
+.chip.prog .ops button.is-showing { color: var(--accent); border-color: var(--accent); }
+.chord-shape { margin: 0.5rem 0 1rem; }
+.chord-shape h4 { margin: 0 0 0.5rem; font-weight: 600; }
+.chord-shape h4 .muted { font-weight: 400; font-size: 0.85rem; }
+.chord-box { display: block; width: 150px; height: auto; background: #10131a; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.cb-pos { fill: var(--muted); font-size: 11px; text-anchor: end; font-family: var(--font); }
+.fb-marker { fill: var(--muted); font-size: 13px; text-anchor: middle; font-family: var(--font); }
+.fb-open { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.shape-meta { margin: 0.4rem 0 0; font-size: 0.85rem; }
+.shape-meta .mk { display: inline-block; margin: 0 0.1rem 0 0.4rem; color: var(--ink); }
+
+.legend { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.legend .deg { display: inline-flex; align-items: center; gap: 0.25rem; }
+.legend .deg.ring { margin-left: 0.4rem; }
+.key-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: middle; }
+.key-dot.is-chord { background: #2f3b40; border: 2px solid #f2efe9; }
 .key-dot.fb-scale { background: #2f3b40; border: 1.5px solid var(--accent); }
 .key-dot.fb-chord { background: var(--accent); }
 .key-dot.fb-root { background: #e0b15a; }

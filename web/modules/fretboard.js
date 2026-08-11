@@ -15,10 +15,18 @@ export function fretboardSVG({
   const sc = Scale.get(scale);
   if (sc.empty) return "";
 
-  // chroma (0–11) → spelled note name, taken from the scale's own spelling.
+  // chroma (0–11) → spelled note name and scale-degree number, from the scale's own
+  // spelling. Degree keys off the interval number (1–7), so a fifth is coloured the
+  // same in every scale and a pentatonic's ♭3/♭7 share the 3/7 colours.
   const spelling = new Map();
-  sc.notes.forEach((n) => spelling.set(Note.chroma(n), n));
-  const rootChroma = Note.chroma(sc.tonic || sc.notes[0]);
+  const degreeOf = new Map();
+  const labelOf = new Map(); // chroma → scale-degree label ("1", "♭3", …) for tooltips
+  sc.notes.forEach((n, i) => {
+    const chroma = Note.chroma(n);
+    spelling.set(chroma, n);
+    degreeOf.set(chroma, parseInt(sc.intervals[i], 10) || i + 1);
+    labelOf.set(chroma, degreeLabel(sc.intervals[i] || ""));
+  });
   const chordChroma = new Set(
     (chordSymbol ? Chord.get(chordSymbol).notes : []).map((n) => Note.chroma(n)),
   );
@@ -62,10 +70,13 @@ export function fretboardSVG({
     for (let f = 0; f <= frets; f++) {
       const pc = (open + f) % 12;
       if (!spelling.has(pc)) continue;
-      const cls = pc === rootChroma ? "fb-root" : chordChroma.has(pc) ? "fb-chord" : "fb-scale";
+      // Colour by scale degree; ring the notes that belong to the current chord.
+      const cls = `fb-deg-${degreeOf.get(pc)}${chordChroma.has(pc) ? " is-chord" : ""}`;
       const cx = xCell(f);
       const cy = y(s);
-      p.push(`<circle cx="${cx}" cy="${cy}" r="10" class="fb-dot ${cls}"/>`);
+      // Hover tooltip: note, its scale degree, and whether it's in the current chord.
+      const tip = `${spelling.get(pc)} · degree ${labelOf.get(pc)}${chordChroma.has(pc) ? " · chord tone" : ""}`;
+      p.push(`<circle cx="${cx}" cy="${cy}" r="10" class="fb-dot ${cls}"><title>${tip}</title></circle>`);
       p.push(`<text x="${cx}" y="${cy + 3.5}" class="fb-label">${spelling.get(pc)}</text>`);
     }
   }
@@ -75,4 +86,92 @@ export function fretboardSVG({
   }
 
   return `<svg viewBox="0 0 ${width} ${height}" class="fretboard" role="img" aria-label="${scale} on a guitar fretboard">${p.join("")}</svg>`;
+}
+
+// A short scale-degree label for an interval, e.g. "1P"→"1", "3m"→"♭3", "4A"→"♯4".
+export function degreeLabel(interval) {
+  const num = interval.match(/\d+/)?.[0] ?? "";
+  const quality = interval.replace(/\d+/g, "");
+  const acc = quality === "m" || quality === "d" ? "♭" : quality === "A" ? "♯" : "";
+  return acc + num;
+}
+
+// The legend for a scale: one { num, label } per degree, in scale order — pairs with
+// the fb-deg-N colours the fretboard paints, so the key reads 1 ♭3 4 5 ♭7, etc.
+export function scaleLegend(scale) {
+  const sc = Scale.get(scale);
+  if (sc.empty) return [];
+  return sc.notes.map((n, i) => {
+    const interval = sc.intervals[i] || "";
+    return { num: parseInt(interval, 10) || i + 1, label: degreeLabel(interval) };
+  });
+}
+
+// A compact chord-box diagram — the vertical grid a player reads to fret one chord.
+// Takes a shape from chordShape() ({ voicing low→high, baseFret, symbol }) and draws
+// strings as columns (low string on the left), an O/X marker over each, finger dots,
+// and a nut (open position) or a "Nfr" label (shifted up the neck).
+export function chordBoxSVG(shape) {
+  if (!shape || !shape.valid) return "";
+  const { voicing, baseFret, symbol = "", notes = [], tuning = STANDARD_GUITAR } = shape;
+
+  // Spell the note under each string/fret for the hover tooltips.
+  const openChr = tuning.map((t) => Note.chroma(t));
+  const spell = new Map(notes.map((n) => [Note.chroma(n), n]));
+  const noteAt = (s, f) => spell.get((openChr[s] + f) % 12) || "";
+
+  const open = baseFret === 0;
+  const firstFret = open ? 1 : baseFret;
+  const fretted = voicing.filter((f) => f > 0);
+  const maxFret = fretted.length ? Math.max(...fretted) : firstFret;
+  const rows = Math.max(4, open ? maxFret : maxFret - firstFret + 1);
+
+  const colW = 20;
+  const rowH = 24;
+  const padL = 26;
+  const padT = 24;
+  const padR = 12;
+  const padB = 14;
+  const cols = voicing.length; // strings
+  const width = padL + (cols - 1) * colW + padR;
+  const height = padT + rows * rowH + padB;
+
+  const sx = (s) => padL + s * colW;
+  const gridTop = padT;
+  const gridBot = padT + rows * rowH;
+
+  const p = [];
+
+  // strings (vertical) and fret wires (horizontal)
+  for (let s = 0; s < cols; s++) {
+    p.push(`<line x1="${sx(s)}" y1="${gridTop}" x2="${sx(s)}" y2="${gridBot}" class="fb-string"/>`);
+  }
+  for (let r = 0; r <= rows; r++) {
+    const yy = padT + r * rowH;
+    const cls = r === 0 && open ? "fb-nut" : "fb-fret";
+    p.push(`<line x1="${sx(0)}" y1="${yy}" x2="${sx(cols - 1)}" y2="${yy}" class="${cls}"/>`);
+  }
+
+  // position label for a shifted box
+  if (!open) {
+    p.push(`<text x="${padL - 10}" y="${padT + rowH * 0.5 + 3}" class="cb-pos">${firstFret}fr</text>`);
+  }
+
+  // O / X markers above the nut, and finger dots in the grid
+  for (let s = 0; s < cols; s++) {
+    const f = voicing[s];
+    const my = padT - 9;
+    if (f === -1) {
+      p.push(`<text x="${sx(s)}" y="${my}" class="fb-marker"><title>muted</title>×</text>`);
+    } else if (f === 0) {
+      p.push(`<circle cx="${sx(s)}" cy="${my - 3}" r="4" class="fb-open"><title>${noteAt(s, 0)} · open</title></circle>`);
+    } else {
+      const space = f - firstFret; // 0-based fret space from the top of the box
+      const cy = padT + (space + 0.5) * rowH;
+      p.push(`<circle cx="${sx(s)}" cy="${cy}" r="7.5" class="fb-dot fb-chord"><title>${noteAt(s, f)} · fret ${f}</title></circle>`);
+    }
+  }
+
+  const fingering = voicing.map((f) => (f === -1 ? "x" : f)).join(" ");
+  return `<svg viewBox="0 0 ${width} ${height}" class="chord-box" role="img" aria-label="${symbol} chord shape: ${fingering}">${p.join("")}</svg>`;
 }
