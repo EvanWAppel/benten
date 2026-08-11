@@ -8,14 +8,25 @@
 export const EFFECTS = {
   distortion: {
     label: "Distortion",
-    params: [{ key: "drive", label: "drive", min: 0, max: 1, step: 0.01, default: 0.4 }],
+    params: [
+      { key: "drive", label: "drive", min: 0, max: 1, step: 0.01, default: 0.4 },
+      { key: "tone", label: "tone (Hz)", min: 500, max: 18000, step: 10, default: 8000 },
+      { key: "level", label: "level", min: 0, max: 1, step: 0.01, default: 0.8 },
+      { key: "type", label: "type", options: ["soft", "hard", "fuzz"], default: "soft" },
+    ],
   },
   filter: {
     label: "Filter",
     params: [
-      { key: "mode", label: "mode", options: ["lowpass", "highpass", "bandpass"], default: "lowpass" },
+      {
+        key: "mode",
+        label: "mode",
+        options: ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch"],
+        default: "lowpass",
+      },
       { key: "freq", label: "freq (Hz)", min: 20, max: 18000, step: 1, default: 1000 },
       { key: "q", label: "Q", min: 0.1, max: 20, step: 0.1, default: 0.7 },
+      { key: "gain", label: "gain (dB)", min: -24, max: 24, step: 0.5, default: 0 },
     ],
   },
   delay: {
@@ -23,6 +34,7 @@ export const EFFECTS = {
     params: [
       { key: "time", label: "time (s)", min: 0, max: 1.5, step: 0.01, default: 0.25 },
       { key: "feedback", label: "feedback", min: 0, max: 0.95, step: 0.01, default: 0.35 },
+      { key: "tone", label: "tone (Hz)", min: 500, max: 18000, step: 10, default: 6000 },
       { key: "mix", label: "mix", min: 0, max: 1, step: 0.01, default: 0.3 },
     ],
   },
@@ -30,6 +42,8 @@ export const EFFECTS = {
     label: "Reverb",
     params: [
       { key: "size", label: "size", min: 0.05, max: 1, step: 0.01, default: 0.6 },
+      { key: "predelay", label: "predelay (s)", min: 0, max: 0.2, step: 0.005, default: 0 },
+      { key: "tone", label: "tone (Hz)", min: 500, max: 18000, step: 10, default: 10000 },
       { key: "mix", label: "mix", min: 0, max: 1, step: 0.01, default: 0.25 },
     ],
   },

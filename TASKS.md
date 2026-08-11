@@ -195,3 +195,23 @@ save presets — not authoring novel DSP. The four core blocks map onto native n
 - [x] Enable the `Effects` nav button and mount the module.
 - [x] Walk the flow end-to-end: build a chain → audition on a take → save → reload.
 - [x] README section: what the Effects module does and how to use it.
+
+### Group FF — More controls on the core effects
+
+Each block is thin today (drive; mode/freq/q; time/feedback/mix; size/mix). Flesh
+them out with the knobs a player actually reaches for. Every control is a `params`
+entry in `effects-model.js` plus wiring in the matching `BUILDERS` factory — the
+UI, clamping, and preset round-trip all follow from the model for free.
+
+- [x] **Distortion — `tone`, `level`, `type`.** Lowpass after the waveshaper (`tone`,
+      Hz) to tame the fizz; output makeup gain (`level`, 0–1) so you can A/B honestly;
+      a curve `type` enum (`soft` = today's arctan, `hard` = clip, `fuzz` = asymmetric).
+- [x] **Filter — `gain` + shelf/peaking/notch modes.** Add `lowshelf`, `highshelf`,
+      `peaking`, `notch` to the `mode` enum (all native `BiquadFilter` types) and a
+      `gain` (dB) control the shelving/peaking modes use.
+- [x] **Delay — `tone` in the feedback loop.** A lowpass inside the loop so repeats
+      darken as they fade — the tape/analog character a bare digital delay lacks.
+- [x] **Reverb — `predelay` + `tone` (damping).** A short pre-delay before the
+      convolver to separate the dry note from its tail, and a lowpass on the wet path
+      so the tail isn't brittle.
+- [x] Tests: new defaults, clamping, and preset round-trip all covered.
