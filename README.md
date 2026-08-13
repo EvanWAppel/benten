@@ -16,10 +16,9 @@ rest until you need them. There's now also an optional local app (see
 [The app](#the-app-optional)) for the things a notebook can't do, but the drawers
 never depend on it.
 
-> **Live demo:** [try benten in your browser](https://YOUR-APP.up.railway.app) —
+> **Live demo:** [try benten in your browser](https://benten-production.up.railway.app/) —
 > a read-only public build. Play chords, record and overdub a take, build an effect
-> chain, search for tabs; saving is off, so nothing is written back. *(Replace this
-> URL with the one Railway gives you.)*
+> chain, search for tabs; saving is off, so nothing is written back.
 
 ## The drawers
 
