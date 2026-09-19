@@ -1,5 +1,5 @@
 // benten front-end — no build step, plain ES modules.
-// The shell: health line + module nav. Chords is the only live module (MVP).
+// The shell: health line + module navigation.
 
 import { getJSON } from "./lib/api.js";
 import { setDemo } from "./lib/demo.js";
@@ -45,8 +45,15 @@ const modules = document.querySelectorAll(".module");
 modules.forEach((btn) => {
   btn.addEventListener("click", () => {
     if (btn.disabled) return;
-    modules.forEach((b) => b.classList.remove("is-active"));
+    modules.forEach((b) => {
+      b.classList.remove("is-active");
+      b.removeAttribute("aria-current");
+    });
     btn.classList.add("is-active");
+    btn.setAttribute("aria-current", "page");
+    document.getElementById("workspace-name").textContent = {
+      chords: "HARMONY", studio: "RECORDING", tabs: "LIBRARY", effects: "SOUND DESIGN",
+    }[btn.dataset.module];
     if (btn.dataset.module === "chords") mountChords(view, { setStatus });
     else if (btn.dataset.module === "studio") mountStudio(view, { setStatus });
     else if (btn.dataset.module === "tabs") mountTabs(view, { setStatus });

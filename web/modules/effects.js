@@ -10,6 +10,7 @@ import { buildChain } from "./effects-audio.js";
 import { parsePreset, presetMarkdown } from "./preset.js";
 import { getJSON, postJSON } from "../lib/api.js";
 import { DEMO_MSG, isDemo } from "../lib/demo.js";
+import { pageHeading } from "./workspace.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -52,15 +53,11 @@ function render() {
 
   root.innerHTML = `
     <section class="module-view effects">
-      <h2>Effects</h2>
-      <p class="muted">Wire up a chain of effects and hear it on one of your takes.
-        Load a WAV from the git-ignored <code>audio/</code> dir, audition it live, and
-        save the chain as a preset into <code>production/effects/</code> — plain Markdown
-        you can read and tweak by hand. Serious mixing still belongs in your DAW.</p>
+      ${pageHeading("effects")}
 
       <div class="row source-row">
         <label class="file-btn">load take
-          <input id="take-file" type="file" accept="audio/*" hidden />
+          <input id="take-file" type="file" accept="audio/*" aria-label="Load audio take" />
         </label>
         <span class="take-label muted">${state.buffer ? escapeHtml(state.takeName) : "no take loaded"}</span>
         <button id="play-btn" ${state.buffer ? "" : "disabled"}>

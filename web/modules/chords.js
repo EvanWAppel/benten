@@ -56,8 +56,13 @@ function render() {
   if (state.shape && !state.progression.includes(state.shape)) state.shape = null;
   root.innerHTML = `
     <section class="module-view chords">
-      <h2>Chords &amp; scales</h2>
-
+      <header class="page-heading">
+        <div><p class="eyebrow">01 / Explore harmony</p><h2>A little structure.<br><em>Endless possibility.</em></h2><p class="page-intro">Find a progression. Follow a melody. See where it takes you.</p></div>
+        <div class="harmony-art" aria-hidden="true"><span></span><span></span><span></span><span></span><i></i><b>THE ART OF RESONANCE</b></div>
+      </header>
+      <div class="chord-workspace">
+      <section class="palette-panel" aria-labelledby="palette-heading">
+      <div class="section-heading"><h3 id="palette-heading">Chord palette</h3><span class="small-label">01 — Choose</span></div>
       <div class="row key-row">
         <label>Key
           <select id="tonic">
@@ -72,12 +77,12 @@ function render() {
 
       <div class="palette" id="palette">
         ${paletteChords()
-          .map((c) => `<button class="chip add" data-add="${c}">${c}</button>`)
+          .map((c, i) => `<button class="chip add" data-add="${c}" aria-label="Add ${c}"><span class="chord-degree">${(state.mode === "major" ? ["I", "ii", "iii", "IV", "V", "vi", "vii°"] : ["i", "ii°", "III", "iv", "v", "VI", "VII"])[i]}</span><span>${c}</span><span class="chord-plus" aria-hidden="true">+</span></button>`)
           .join("")}
       </div>
 
       <div class="patterns" id="patterns">
-        <span class="patterns-label muted">patterns</span>
+        <span class="patterns-label muted">A place to start</span>
         ${patternsFor(state.mode)
           .map((p) => {
             const chords = chordsForPattern(p.id, state.tonic, state.mode);
@@ -88,24 +93,31 @@ function render() {
       </div>
 
       <form class="row" id="free-form">
-        <input id="free" type="text" autocomplete="off"
-               placeholder="type a chord — Am7, D9, Cmaj7…" />
-        <button type="submit">add</button>
+        <input id="free" type="text" autocomplete="off" aria-label="Custom chord"
+               placeholder="Or try Am7, D9, Cmaj7…" />
+        <button type="submit" aria-label="Add custom chord">Add +</button>
       </form>
-
-      <h3>Progression</h3>
+      <p class="palette-footnote">A key is a starting point, not a boundary.</p>
+      </section>
+      <section class="progression-panel" aria-labelledby="progression-heading">
+      <div class="section-heading"><h3 id="progression-heading">Your progression</h3><span class="small-label">02 — Make</span></div>
       <ol class="progression" id="progression">
         ${
           state.progression.length === 0
-            ? `<li class="empty muted">empty — click the palette or type a chord</li>`
+            ? `<li class="empty"><span class="empty-staff" aria-hidden="true">♪</span><strong>Make room for a melody.</strong><p>Choose a few chords from the palette,<br>or let a familiar pattern lead the way.</p><span class="small-label">Your first chord is the beginning.</span></li>`
             : state.progression.map(chordChip).join("")
         }
       </ol>
 
       ${renderShape()}
       ${state.progression.length ? renderPractice() : ""}
-      ${state.progression.length ? renderSuggestions() : ""}
       ${state.progression.length ? renderSave() : ""}
+      </section>
+      </div>
+      <section class="exploration-panel" aria-label="Scale explorer">
+      <div class="section-heading"><h3>Find your way around the fretboard</h3><span class="small-label">03 — Explore</span></div>
+      ${state.progression.length ? renderSuggestions() : `<div class="explorer-empty"><div class="fret-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Every chord opens up a world of notes.<br><span class="muted">Build a progression to discover the scales that fit.</span></p></div>`}
+      </section>
     </section>`;
 
   wire();
@@ -141,7 +153,7 @@ function renderPractice() {
 function renderSave() {
   return `
     <div class="save-row row">
-      <input id="title" type="text" autocomplete="off"
+      <input id="title" type="text" autocomplete="off" aria-label="Progression name"
              placeholder="name this progression (optional)" />
       <button id="save-btn" type="button">save to composition/</button>
     </div>`;
