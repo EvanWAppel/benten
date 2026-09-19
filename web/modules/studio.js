@@ -8,6 +8,7 @@ import { MicRecorder, listInputDevices, micSupported } from "./recorder.js";
 import { sessionMarkdown, riffMarkdown } from "./session.js";
 import { postBlob, postJSON } from "../lib/api.js";
 import { DEMO_MSG, isDemo } from "../lib/demo.js";
+import { pageHeading } from "./workspace.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -47,7 +48,7 @@ function render() {
   if (!state.supported) {
     root.innerHTML = `
       <section class="module-view studio">
-        <h2>Studio</h2>
+        ${pageHeading("studio")}
         <p class="muted">
           The mic needs a secure context. Reach benten at
           <code>http://127.0.0.1:8788</code> (localhost counts as secure) and use a
@@ -60,10 +61,7 @@ function render() {
   const overdubbing = state.backingId != null;
   root.innerHTML = `
     <section class="module-view studio">
-      <h2>Studio</h2>
-      <p class="muted">Catch a take, loop it, and jam over yourself. Audio stays
-        local — it lands in the git-ignored <code>audio/</code> dir, referenced from
-        your notes by path.</p>
+      ${pageHeading("studio")}
 
       <div class="row mic-row">
         <label>input

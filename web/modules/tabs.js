@@ -7,6 +7,7 @@
 import { getJSON, postJSON } from "../lib/api.js";
 import { DEMO_MSG, isDemo } from "../lib/demo.js";
 import { tabMarkdown, tabTitle } from "./tabnote.js";
+import { pageHeading } from "./workspace.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -49,14 +50,10 @@ function render() {
 
   root.innerHTML = `
     <section class="module-view tabs">
-      <h2>Tabs</h2>
-      <p class="muted">Find tablature fast and file it next to the instrument it's for.
-        Search runs against <strong>Songsterr</strong>; saving keeps a tidy Markdown
-        reference in <code>instruments/&lt;instrument&gt;/tabs/</code> that links out to
-        the source — the tab itself lives there, not in your drawer.</p>
+      ${pageHeading("tabs")}
 
       <form id="tab-search" class="row">
-        <input id="q" type="search" placeholder="song or artist — e.g. blackbird"
+        <input id="q" type="search" aria-label="Song or artist" placeholder="song or artist — e.g. blackbird"
           value="${escapeHtml(state.query)}" autocomplete="off" />
         <label>file under
           <select id="instrument">${options}</select>
@@ -76,7 +73,7 @@ function renderResults() {
   if (!state.results.length) {
     return state.query
       ? `<p class="muted">No tabs found for “${escapeHtml(state.query)}”.</p>`
-      : "";
+      : `<div class="library-empty"><span class="small-label">A song is a good place to begin</span><p>What have you been<br><em>wanting to play?</em></p><span class="muted">Search by song or artist to find your next practice piece.</span></div>`;
   }
   const rows = state.results
     .map((r, i) => {
