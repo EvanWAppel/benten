@@ -1,0 +1,15 @@
+# ruff — lint + format config for benten. Kept deterministic (repo-local, not the
+# ambient parent config) so local runs and CI agree. See .github/workflows/ci.yml.
+target-version = "py311"
+
+[lint]
+# pyflakes + pycodestyle errors/warnings, import sorting, pyupgrade, bugbear.
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[lint.flake8-bugbear]
+# FastAPI's dependency-injection idiom intentionally calls Depends()/Query()/etc.
+# in argument defaults; without this, B008 would flag every route handler.
+extend-immutable-calls = [
+  "fastapi.Depends", "fastapi.Query", "fastapi.Path", "fastapi.Body",
+  "fastapi.Header", "fastapi.Form", "fastapi.File", "fastapi.Cookie",
+]

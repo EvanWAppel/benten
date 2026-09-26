@@ -3,8 +3,9 @@ touches Songsterr or the real drawers."""
 
 import json
 
-import pytest
+from fastapi.testclient import TestClient
 
+from benten.server import app, instruments_dir, tab_fetcher
 from benten.tabs import search_tabs
 
 # A canned Songsterr-shaped response: one string-artist record, one object-artist
@@ -58,15 +59,11 @@ def test_non_list_payload_yields_no_results():
 
 # --- endpoints ------------------------------------------------------------
 
-from fastapi.testclient import TestClient
-
-from benten.server import app, instruments_dir, tab_fetcher
-
 client = TestClient(app)
 
 
 def test_search_endpoint_returns_normalised_results():
-    app.dependency_overrides[tab_fetcher] = lambda: (lambda url: CANNED)
+    app.dependency_overrides[tab_fetcher] = lambda: lambda url: CANNED
     try:
         res = client.get("/tabs/search", params={"q": "wing"})
     finally:

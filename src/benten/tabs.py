@@ -14,7 +14,7 @@ tested without a network. The source lives in one swappable place: change
 from __future__ import annotations
 
 import json
-from typing import Callable
+from collections.abc import Callable
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 

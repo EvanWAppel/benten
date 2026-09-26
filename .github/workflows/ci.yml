@@ -1,0 +1,65 @@
+name: CI
+
+# Lint, typecheck, and test on every push to master and every PR into it.
+# Mirrors the local commands in CLAUDE.md so "green here" means "green locally".
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# A newer push to the same ref cancels the older, still-running run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up uv (with cache)
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Install (dev extra, from the lockfile)
+        run: uv sync --extra dev --frozen
+      - name: ruff — lint
+        run: uv run ruff check .
+      - name: ruff — format check
+        run: uv run ruff format --check .
+      - name: ty — typecheck
+        run: uv run ty check
+
+  test:
+    name: Backend tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up uv (with cache)
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+      - name: Install (dev extra)
+        run: uv sync --extra dev
+      - name: pytest
+        run: uv run python -m pytest -q
+
+  frontend:
+    name: Front-end theory tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: node --test (no deps; built-in runner)
+        run: node --test jstests/*.mjs
