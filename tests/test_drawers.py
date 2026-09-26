@@ -2,8 +2,6 @@
 
 from datetime import date
 
-import pytest
-
 from benten.drawers import slugify, write_note
 
 

@@ -211,7 +211,9 @@ def create_tab(
     slug = slugify(note.instrument)
     drawer = (instr_root / slug).resolve()
     if not drawer.is_relative_to(instr_root.resolve()) or not drawer.is_dir():
-        raise HTTPException(status_code=400, detail=f"unknown instrument: {note.instrument}")
+        raise HTTPException(
+            status_code=400, detail=f"unknown instrument: {note.instrument}"
+        )
     path = write_note(drawer / "tabs", note.title, note.body)
     return {"saved": True, "path": _repo_relative(path)}
 

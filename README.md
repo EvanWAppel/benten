@@ -1,5 +1,9 @@
 # benten
 
+[![CI](https://github.com/EvanWAppel/benten/actions/workflows/ci.yml/badge.svg)](https://github.com/EvanWAppel/benten/actions/workflows/ci.yml)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+
 *Benten — the Japanese goddess of music, eloquence, and everything that flows —
 is the patron of this repo. She watches over anything that moves like water:
 sound, language, the arts.*

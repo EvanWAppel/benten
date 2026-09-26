@@ -16,7 +16,9 @@ def test_store_take_uses_date_slug_and_ext(tmp_path):
 
 
 def test_store_take_honors_explicit_extension(tmp_path):
-    path = store_take(tmp_path, "idea", b"\x00\x01", ext=".flac", today=date(2026, 8, 1))
+    path = store_take(
+        tmp_path, "idea", b"\x00\x01", ext=".flac", today=date(2026, 8, 1)
+    )
     assert path.suffix == ".flac"
     assert path.name == "2026-08-01-idea.flac"
 

@@ -33,3 +33,32 @@ DOM the JS builds is unchanged. Verified: `node --test jstests/theory.test.mjs`
 (5/5 pass) and `curl` against `uv run benten` (health ok, index + `style.css` 200,
 dark tokens present).
 
+
+## 2026-09-26 — GitHub Actions CI: lint + typecheck + test on every PR
+
+**Draft — awaiting Evan's confirmation.**
+
+**Chosen:** A three-job workflow (`.github/workflows/ci.yml`) — `lint` (ruff check +
+ruff format --check + ty), `test` (pytest across a Python 3.11/3.12/3.13 matrix), and
+`frontend` (`node --test jstests/*.mjs`) — on every push to `master` and every PR into
+it, with badges (CI, Ruff, Python) in the README. ruff + ty are pinned as **dev
+dependencies** (via `uv add --optional dev`) and a repo-local **`ruff.toml`** fixes the
+rule set (`E,F,W,I,UP,B`) so local and CI agree.
+
+**Rejected / trade-offs:**
+- *Ephemeral `uvx ruff`/`uvx ty` in CI* instead of pinned dev-deps — simpler, but the
+  version floats, so a new ruff release could redden CI on unchanged code. Pinning in
+  `uv.lock` makes runs reproducible.
+- *Relying on ruff's default rules / ambient parent config* — the exotic findings we saw
+  locally (DTZ, S) leaked from a parent-dir config that won't exist on the runner, so CI
+  would have been non-deterministic. A repo-local `ruff.toml` pins the exact rule set.
+- *"Fixing" the B008 findings by rewriting routes* — rejected. `Depends()` in argument
+  defaults is FastAPI's intended idiom; `flake8-bugbear.extend-immutable-calls` whitelists
+  it rather than distorting every handler.
+- *`uv run pytest`* — the bare console script fails to spawn in this env even though pytest
+  is installed; `uv run python -m pytest` is robust, so CI uses the module form.
+- *Single-version test job* — a 3.11–3.13 matrix costs a little more CI time but proves the
+  `requires-python >=3.11` claim rather than asserting it.
+
+**Follow-up:** once the first run reports, make the `lint` / `test` / `frontend` checks
+**required** in `master` branch protection (they're currently advisory).

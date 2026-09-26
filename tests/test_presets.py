@@ -26,7 +26,9 @@ def test_post_preset_writes_into_the_presets_dir(tmp_path):
 
 
 def test_get_presets_lists_saved_presets(tmp_path):
-    (tmp_path / "2026-08-09-ambient-lead.md").write_text("# Ambient lead — effect chain\n")
+    (tmp_path / "2026-08-09-ambient-lead.md").write_text(
+        "# Ambient lead — effect chain\n"
+    )
     (tmp_path / "2026-08-09-crunch.md").write_text("# Crunch — effect chain\n")
 
     app.dependency_overrides[presets_dir] = lambda: tmp_path
@@ -37,7 +39,10 @@ def test_get_presets_lists_saved_presets(tmp_path):
 
     assert res.status_code == 200
     presets = res.json()["presets"]
-    assert [p["name"] for p in presets] == ["2026-08-09-ambient-lead", "2026-08-09-crunch"]
+    assert [p["name"] for p in presets] == [
+        "2026-08-09-ambient-lead",
+        "2026-08-09-crunch",
+    ]
     assert presets[0]["body"] == "# Ambient lead — effect chain\n"
 
 
