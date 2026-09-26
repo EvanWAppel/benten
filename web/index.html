@@ -3,33 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f3f0e8" />
-  <meta name="description" content="Benten — a quiet workspace for a musical life. Explore harmony, catch a take, and find your sound." />
+  <meta name="theme-color" content="#14161a" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="Benten — a dark stage console for a musical life. Big glanceable chords, a bright fretboard, and a place to catch a take — built to read across the room mid-jam." />
   <title>benten — a musical workbench</title>
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <a class="skip-link" href="#view">Skip to workspace</a>
-  <aside class="sidebar">
-    <header class="topbar">
-      <div class="brand-mark" aria-hidden="true">b.</div>
-      <h1>benten<span class="brand-dot">.</span></h1>
-      <p class="tagline">A musical workbench</p>
-    </header>
-    <p class="nav-caption">Your workspace</p>
+  <header class="appbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">b.</span>
+      <span class="brand-name">benten<span class="brand-dot">.</span></span>
+    </div>
     <nav class="modules" aria-label="modules">
-      <button class="module is-active" data-module="chords" aria-current="page"><span class="nav-number">01</span><span>Chords</span><span class="nav-arrow" aria-hidden="true">↗</span></button>
-      <button class="module" data-module="studio" title="record &amp; overdub"><span class="nav-number">02</span><span>Studio</span><span class="nav-arrow" aria-hidden="true">↗</span></button>
-      <button class="module" data-module="tabs" title="find &amp; file tablature"><span class="nav-number">03</span><span>Tabs</span><span class="nav-arrow" aria-hidden="true">↗</span></button>
-      <button class="module" data-module="effects" title="build an effect chain"><span class="nav-number">04</span><span>Effects</span><span class="nav-arrow" aria-hidden="true">↗</span></button>
+      <button class="module is-active" data-module="chords" aria-current="page"><span class="nav-number">01</span><span>Chords</span></button>
+      <button class="module" data-module="studio" title="record &amp; overdub"><span class="nav-number">02</span><span>Studio</span></button>
+      <button class="module" data-module="tabs" title="find &amp; file tablature"><span class="nav-number">03</span><span>Tabs</span></button>
+      <button class="module" data-module="effects" title="build an effect chain"><span class="nav-number">04</span><span>Effects</span></button>
     </nav>
-    <div class="sidebar-note"><span class="small-label">A note to self</span><p>Follow the sound.<br>Keep the offcuts.</p><span class="note-rule"></span><span class="small-label">Practice is a process.</span></div>
-    <div class="sidebar-bottom"><span class="status-dot"></span> Made for making music</div>
-  </aside>
+    <div class="appbar-status" aria-label="workspace">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span id="workspace-name">HARMONY</span>
+    </div>
+  </header>
   <div class="app-shell">
-    <div class="workspace-bar"><span>THE WORKBENCH <span class="bar-slash">/</span> <span id="workspace-name">HARMONY</span></span><span class="workspace-edition">BENTEN · VOL. 001</span></div>
     <main id="view" tabindex="-1"></main>
-    <footer class="statusbar"><span id="status" role="status">ready</span><span>Everything starts with an idea.</span></footer>
+    <footer class="statusbar"><span id="status" role="status">ready</span><span class="statusbar-motto">Everything starts with an idea.</span></footer>
   </div>
 
   <script type="module" src="/static/app.js"></script>
