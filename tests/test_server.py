@@ -118,3 +118,22 @@ def test_post_riff_writes_to_the_riffs_drawer(tmp_path):
     written = list(tmp_path.glob("*.md"))
     assert len(written) == 1
     assert written[0].read_text() == "# descending lick\n"
+
+
+def test_index_links_the_favicon():
+    res = client.get("/")
+    assert 'rel="icon"' in res.text
+    assert "/static/favicon.svg" in res.text
+
+
+def test_favicon_svg_is_served():
+    res = client.get("/static/favicon.svg")
+    assert res.status_code == 200
+    assert res.headers["content-type"].startswith("image/svg+xml")
+
+
+def test_favicon_ico_probe_does_not_404():
+    # Browsers request /favicon.ico regardless of the <link>; answer with the SVG.
+    res = client.get("/favicon.ico")
+    assert res.status_code == 200
+    assert res.headers["content-type"].startswith("image/svg+xml")
