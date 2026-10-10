@@ -224,6 +224,12 @@ def index() -> FileResponse:
     return FileResponse(WEB_DIR / "index.html")
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> FileResponse:
+    """Browsers probe /favicon.ico regardless of the <link>; hand them the SVG."""
+    return FileResponse(WEB_DIR / "favicon.svg", media_type="image/svg+xml")
+
+
 class NoCacheStaticFiles(StaticFiles):
     """Serve static assets with `Cache-Control: no-cache` so the browser always
     revalidates. This is a no-build, edit-and-reload app — stale JS/CSS from the
