@@ -5,6 +5,7 @@ import { Key, Chord } from "../vendor/tonal.js";
 import { analyzeProgression } from "./theory.js";
 import { patternsFor, chordsForPattern } from "./patterns.js";
 import { fretboardSVG, chordBoxSVG, scaleLegend, TUNINGS, DEFAULT_INSTRUMENT } from "./fretboard.js";
+import { keyboardSVG } from "./keyboard.js";
 import { chordShape } from "./chordshape.js";
 import { progressionMarkdown } from "./compose.js";
 import { postJSON } from "../lib/api.js";
@@ -21,6 +22,7 @@ const state = {
   shape: null, // chord symbol whose fingering box is currently shown, if any
   labels: "note", // fretboard dot labels: "note" (C, E♭…) or "degree" (1, ♭3…)
   instrument: DEFAULT_INSTRUMENT, // scale-board tuning, a key of TUNINGS
+  view: "fretboard", // scale board drawn as "fretboard" or piano "keyboard"
   // practice-loop settings
   tempo: 90,
   beatsPerBar: 4,
@@ -218,16 +220,31 @@ function renderFretboard() {
   const instrumentBtn = (key) =>
     `<button class="scale-pick ${instrument === key ? "is-active" : ""}" data-instrument="${key}"
              aria-pressed="${instrument === key}" title="${TUNINGS[key].label}">${key}</button>`;
+  const keyboard = state.view === "keyboard";
+  const viewBtn = (value, text) =>
+    `<button class="scale-pick ${(keyboard ? "keyboard" : "fretboard") === value ? "is-active" : ""}" data-view="${value}"
+             aria-pressed="${(keyboard ? "keyboard" : "fretboard") === value}">${text}</button>`;
   return `
     <div class="fretboard-wrap">
-      <h4>${chordSymbol} · ${scale} <span class="on-guitar muted">on ${instrument}</span></h4>
-      <p class="fb-labels muted" role="group" aria-label="instrument">
-        play it on ${Object.keys(TUNINGS).map(instrumentBtn).join(" ")}
+      <h4>${chordSymbol} · ${scale} <span class="on-guitar muted">on ${keyboard ? "piano" : instrument}</span></h4>
+      <p class="fb-labels muted" role="group" aria-label="diagram view">
+        show it as ${viewBtn("fretboard", "fretboard")} ${viewBtn("keyboard", "keyboard")}
       </p>
-      <p class="fb-labels muted" role="group" aria-label="fretboard labels">
+      ${
+        keyboard
+          ? ""
+          : `<p class="fb-labels muted" role="group" aria-label="instrument">
+        play it on ${Object.keys(TUNINGS).map(instrumentBtn).join(" ")}
+      </p>`
+      }
+      <p class="fb-labels muted" role="group" aria-label="diagram labels">
         label dots by ${labelBtn("note", "note")} ${labelBtn("degree", "degree")}
       </p>
-      ${fretboardSVG({ scale, chordSymbol, labels: state.labels, tuning: TUNINGS[instrument].notes, instrument })}
+      ${
+        keyboard
+          ? keyboardSVG({ scale, chordSymbol, labels: state.labels })
+          : fretboardSVG({ scale, chordSymbol, labels: state.labels, tuning: TUNINGS[instrument].notes, instrument })
+      }
       <p class="legend muted">
         ${degrees}
         <span class="deg ring"><span class="key-dot is-chord"></span>${chordSymbol} tone</span>
@@ -323,6 +340,14 @@ function wire() {
   root.querySelectorAll("[data-labels]").forEach((b) =>
     b.addEventListener("click", () => {
       state.labels = b.dataset.labels;
+      render();
+    }),
+  );
+
+  // scale-board view: fretboard ↔ piano keyboard (same degree colours + chord ring)
+  root.querySelectorAll("[data-view]").forEach((b) =>
+    b.addEventListener("click", () => {
+      state.view = b.dataset.view;
       render();
     }),
   );

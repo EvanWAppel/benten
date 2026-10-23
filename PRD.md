@@ -110,7 +110,7 @@ on the neck?*
 
 - **All audio / playback** — clicking to hear a chord, the practice loop, the
   metronome. This was the next increment after v1 (§5, Phase 1.5), now shipped.
-- Piano keyboard diagram (fretboard only for v1).
+- Piano keyboard diagram (fretboard only for v1). *Added after v1 as a view toggle on the scale board (W-06).*
 - Other fretted instruments (bass, ukulele, mandolin) — one tuning, guitar, first.
 - Deep theory: modal interchange, secondary dominants, tension/avoid-note maps,
   substitutions.

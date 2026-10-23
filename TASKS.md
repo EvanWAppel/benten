@@ -239,4 +239,4 @@ a merge to `master` redeploys the Railway demo). See `PRIMER.md`.
 - [x] **W-03** Fretboard note/degree label toggle (`fretboardSVG({labels})` + Chords UI toggle), tested.
 - [x] **W-04** Test that every non-GET route is refused (403) in demo mode, by enumerating `app.routes`.
 - [x] **W-05** Instrument tunings catalog (guitar/bass/uke/mandolin) + selector for the scale board, tested.
-- [ ] **W-06** Piano keyboard diagram (`keyboardSVG`) with degree colours + chord-tone ring, tested.
+- [x] **W-06** Piano keyboard diagram (`keyboardSVG`) with degree colours + chord-tone ring, tested.
