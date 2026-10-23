@@ -6,12 +6,25 @@ import { Scale, Chord, Note } from "../vendor/tonal.js";
 
 export const STANDARD_GUITAR = ["E2", "A2", "D3", "G3", "B3", "E4"]; // low → high
 
+// Instruments the scale board can draw, each as open-string notes low → high (string
+// 0 is the lowest-pitched course, drawn at the bottom). The ukulele is re-entrant: its
+// G string is pitched above the C, so "low → high" means string order, not pitch.
+// Chord boxes stay guitar-only; these only feed fretboardSVG({ tuning }).
+export const TUNINGS = {
+  guitar: { label: "Guitar (EADGBE)", notes: STANDARD_GUITAR },
+  bass: { label: "Bass (EADG)", notes: ["E1", "A1", "D2", "G2"] },
+  ukulele: { label: "Ukulele (GCEA)", notes: ["G4", "C4", "E4", "A4"] },
+  mandolin: { label: "Mandolin (GDAE)", notes: ["G3", "D4", "A4", "E5"] },
+};
+export const DEFAULT_INSTRUMENT = "guitar";
+
 export function fretboardSVG({
   scale,
   chordSymbol = "",
   tuning = STANDARD_GUITAR,
   frets = 12,
   labels = "note", // "note" → spelled names on the dots; "degree" → 1, ♭3, 5…
+  instrument = "guitar", // only names the instrument in the aria label
 } = {}) {
   const sc = Scale.get(scale);
   if (sc.empty) return "";
@@ -87,7 +100,7 @@ export function fretboardSVG({
     p.push(`<text x="${xCell(f)}" y="${height - 8}" class="fb-fretnum">${f}</text>`);
   }
 
-  return `<svg viewBox="0 0 ${width} ${height}" class="fretboard" role="img" aria-label="${scale} on a guitar fretboard">${p.join("")}</svg>`;
+  return `<svg viewBox="0 0 ${width} ${height}" class="fretboard" role="img" aria-label="${scale} on a ${instrument} fretboard">${p.join("")}</svg>`;
 }
 
 // A short scale-degree label for an interval, e.g. "1P"→"1", "3m"→"♭3", "4A"→"♯4".
