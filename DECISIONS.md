@@ -62,3 +62,60 @@ rule set (`E,F,W,I,UP,B`) so local and CI agree.
 
 **Follow-up:** once the first run reports, make the `lint` / `test` / `frontend` checks
 **required** in `master` branch protection (they're currently advisory).
+
+
+## 2026-08-09 — Tabs come from Songsterr (external API), saved as link-out references
+
+**Draft — awaiting Evan's confirmation.** *(Drafted 2026-10-22 for W-02 from the
+`TASKS.md` Phase 3 notes and PRD §8; the decision shipped in Phase 3, PR #4.)*
+
+**Chosen:** Tab search uses an external API, **Songsterr**. The network is touched
+only on the search path (`GET /tabs/search` proxies Songsterr). Saving a find
+(`POST /tabs`) writes a Markdown reference that links out into
+`instruments/<instrument>/tabs/`, so no tab content is scraped or stored. The source
+is one swappable constant in `src/benten/tabs.py`, and the HTTP fetch is injected so
+the search logic tests without a network.
+
+**Rejected / alternatives (PRD §8):**
+- *A licensed tab source.* This was one of the three options PRD §8 left open. The
+  Phase 3 notes don't record why it lost to Songsterr. **Evan to confirm.**
+- *User-supplied local tab files.* This was also left open in PRD §8 and not chosen.
+  The rationale isn't written down either. **Evan to confirm.**
+- *Scraping tab sites.* PRD §8 notes that most tab sites have scraping/ToS
+  constraints. That is why the source had to be decided before building, and why
+  saving stores a link-out reference rather than the tab itself.
+
+**Why it's safe / how it was done:** The network dependency stays on the search path.
+Everything written to a drawer is a plain, hand-editable Markdown link, and swapping
+the source means changing one constant. Live-verified in Phase 3: a real Songsterr
+search, a valid link-out URL (it 301s to the tab page), and a clean Markdown reference
+on disk.
+
+
+## 2026-08-09 — Effects are native Web Audio nodes, not hand-written AudioWorklet DSP
+
+**Draft — awaiting Evan's confirmation.** *(Drafted 2026-10-22 for W-02 from the
+`TASKS.md` Phase 4 notes and PRD §8; the decision shipped in Phase 4, PR #6, and was
+extended by PR #9.)*
+
+**Chosen:** "Design my own effects" means a modular chain of ready-made Web Audio
+**primitives**, wired together and saved as presets. It does not mean authoring
+novel DSP algorithms. The four core blocks map onto native nodes: distortion is a
+`WaveShaper`, filter is a `BiquadFilter`, delay is a `Delay` with feedback, and reverb
+is a `Convolver` with a generated impulse. The native nodes *are* the primitives.
+Presets render to clean, hand-editable Markdown in `production/effects/`, and they
+round-trip.
+
+**Rejected / alternatives:**
+- *Hand-written `AudioWorklet` sample math (novel DSP).* PRD §8 settled the scope as
+  primitives, not new algorithms. Because the four blocks map onto native nodes, none
+  is needed. (`AudioWorklet` is still used in Studio for PCM capture. That is a
+  separate use, not an effect.)
+
+**Why it's safe / how it was done:** Adding a control stays cheap. Each one is a
+`params` entry in `effects-model.js` plus wiring in the matching `BUILDERS` factory,
+and the UI, clamping and preset round-trip follow from the model (Group FF added
+tone/level/type, shelf/peaking/notch + gain, feedback-loop tone, and
+predelay/damping this way). The audio stays client-side, as the PRD requires. The
+flow was walked end-to-end in Group EE: build a chain, audition it on a take, save,
+reload.
