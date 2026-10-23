@@ -234,7 +234,7 @@ UI, clamping, and preset round-trip all follow from the model for free.
 Small, test-first tasks a session can land as one PR each (never merged unattended —
 a merge to `master` redeploys the Railway demo). See `PRIMER.md`.
 
-- [ ] **W-01** Docs refresh: CLAUDE.md "Current state", PRD status/date, PRD §8 open questions marked resolved.
+- [x] **W-01** Docs refresh: CLAUDE.md "Current state", PRD status/date, PRD §8 open questions marked resolved.
 - [ ] **W-02** DECISIONS.md drafts: Songsterr tab source; Effects = native Web Audio primitives (awaiting Evan's confirmation).
 - [ ] **W-03** Fretboard note/degree label toggle (`fretboardSVG({labels})` + Chords UI toggle), tested.
 - [ ] **W-04** Test that every non-GET route is refused (403) in demo mode, by enumerating `app.routes`.
