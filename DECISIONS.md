@@ -36,7 +36,7 @@ dark tokens present).
 
 ## 2026-09-26 — GitHub Actions CI: lint + typecheck + test on every PR
 
-**Draft — awaiting Evan's confirmation.**
+**Confirmed** — Evan, blocker triage 2026-10-23.
 
 **Chosen:** A three-job workflow (`.github/workflows/ci.yml`) — `lint` (ruff check +
 ruff format --check + ty), `test` (pytest across a Python 3.11/3.12/3.13 matrix), and
