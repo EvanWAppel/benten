@@ -228,3 +228,15 @@ UI, clamping, and preset round-trip all follow from the model for free.
       convolver to separate the dry note from its tail, and a lowpass on the wet path
       so the tail isn't brittle.
 - [x] Tests: new defaults, clamping, and preset round-trip all covered.
+
+## Weekend 2026-10-24 — autonomous follow-ups
+
+Small, test-first tasks a session can land as one PR each (never merged unattended —
+a merge to `master` redeploys the Railway demo). See `PRIMER.md`.
+
+- [ ] **W-01** Docs refresh: CLAUDE.md "Current state", PRD status/date, PRD §8 open questions marked resolved.
+- [ ] **W-02** DECISIONS.md drafts: Songsterr tab source; Effects = native Web Audio primitives (awaiting Evan's confirmation).
+- [ ] **W-03** Fretboard note/degree label toggle (`fretboardSVG({labels})` + Chords UI toggle), tested.
+- [ ] **W-04** Test that every non-GET route is refused (403) in demo mode, by enumerating `app.routes`.
+- [ ] **W-05** Instrument tunings catalog (guitar/bass/uke/mandolin) + selector for the scale board, tested.
+- [ ] **W-06** Piano keyboard diagram (`keyboardSVG`) with degree colours + chord-tone ring, tested.
