@@ -57,9 +57,10 @@ uv run benten        # http://127.0.0.1:8788
 First module up is **Chords & scales**: pick a key, build a progression (click the
 in-key palette or type symbols like `Am7`, `D9`, `Cmaj7`), and get the scales that fit
 each chord and the whole thing — with the chords that step outside the key flagged.
-Click a scale to see it laid across a guitar fretboard, then save the result straight
-into `composition/` as plain Markdown. Nothing it writes is anything you couldn't have
-typed by hand — that's the rule. It plays, too: click a chord to hear it, or loop the
+Click a scale to see it laid across a guitar fretboard (or bass, ukulele, mandolin),
+or flip the view to a piano keyboard: same degree colours, same ring on the chord
+tones. Then save the result straight into `composition/` as plain Markdown. Nothing it
+writes is anything you couldn't have typed by hand — that's the rule. It plays, too: click a chord to hear it, or loop the
 whole progression against a metronome and solo over it.
 
 The **Studio** module is where a take gets caught. Enable the mic, pick your input,

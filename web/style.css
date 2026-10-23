@@ -349,6 +349,7 @@ main {
 .fretboard-wrap { margin-top: 16px; padding: 18px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
 .fretboard-wrap h4 { margin: 0 0 12px; font: 400 17px var(--serif); color: var(--ink-2); }
 .on-guitar { font-weight: 400; font-size: 0.8rem; }
+.fb-labels { margin: 0 0 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .fretboard { display: block; width: 100%; max-width: 100%; height: auto; background: var(--board); border: 1px solid var(--line-2); border-radius: 8px; padding: 12px; }
 
 .fb-string { stroke: #565c66; stroke-width: 1; }
@@ -360,6 +361,11 @@ main {
 .fb-dot.fb-root { fill: var(--amber); }
 .fb-fretnum { fill: var(--muted); font: 10px var(--font); text-anchor: middle; }
 .fb-label { fill: #fff; stroke: #0a0c0f; stroke-width: 2.2; paint-order: stroke; font: 600 9px var(--font); text-anchor: middle; }
+
+/* the piano keyboard — the fretboard's sibling: same dots, same degree colours */
+.keyboard { display: block; width: 100%; max-width: 640px; height: auto; background: var(--board); border: 1px solid var(--line-2); border-radius: 8px; padding: 12px; }
+.kb-white { fill: #e9e6de; stroke: #0a0c0f; stroke-width: 1; }
+.kb-black { fill: #1a1d22; stroke: #0a0c0f; stroke-width: 1; }
 
 /* scale-degree colours — one per interval (1–7), a blue ramp that reads calm
    on the dark board: deepest at the root, lightening up the scale. */

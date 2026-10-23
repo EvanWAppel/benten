@@ -2,7 +2,7 @@
 
 benten is a workshop for a musical life: six Markdown **drawers** (`theory/`,
 `instruments/`, `riffs/`, `composition/`, `recording/`, `production/`) plus two
-practice logs, and — now being built — a small **local web app** that sits on top
+practice logs, and a small **local web app** that sits on top
 of those drawers and does the things Markdown can't (hear a chord, loop a rhythm
 part, catch a mic take, find a tab).
 
@@ -42,15 +42,17 @@ slower than opening a file and typing was.
   jobs are serving the front-end and reading/writing the drawers. No music logic and
   no audio pass through it.
 - **Front-end:** **no-build vanilla JS** (ES modules) in `web/`. No React, no
-  bundler. Theory via `tonal.js`; sound (later) via the Web Audio API — all
-  client-side.
+  bundler. Theory via `tonal.js`; sound via the Web Audio API — all client-side.
 
 ```
-uv sync                 # install (adds dev extras: uv sync --extra dev)
-uv run benten           # serve at http://127.0.0.1:8788
-uv run pytest           # backend tests
-node --test jstests/theory.test.mjs   # front-end theory-logic tests (no deps; node built-in)
+uv sync --extra dev --frozen   # install, with dev extras
+uv run benten                  # serve at http://127.0.0.1:8788
+uv run python -m pytest -q     # backend tests
+node --test jstests/*.mjs      # front-end logic tests (no deps; node built-in)
 ```
+
+The full CI set (what every PR must leave green):
+`uv run ruff check . && uv run ruff format --check . && uv run ty check && uv run python -m pytest -q && node --test jstests/*.mjs`.
 
 Paths (web assets, drawers, the `audio/` working dir) resolve from the repo root
 via `src/benten/paths.py`, so the server runs correctly from any cwd.
@@ -71,9 +73,15 @@ via `src/benten/paths.py`, so the server runs correctly from any cwd.
 
 ## Current state
 
-Group A (server skeleton + Factotum registration) is the scaffold in place now.
-Next up is the Chords module: chord entry → chord-scale suggestions → guitar
-fretboard → save to `composition/`. See `TASKS.md`.
+*As of 2026-10-22.* Every build task in `TASKS.md` has shipped: the silent Chords
+MVP (Groups A–H), audible Chords (Phase 1.5), the Studio (Phase 2), Tabs via
+Songsterr (Phase 3), and the Effects rack with its extra controls (Phase 4 / FF).
+The only open items are Evan's own dogfood logs (H, X, Phase 3), which must be
+real sessions and are never written for him.
+
+A public **read-only demo** (`BENTEN_DEMO=1`, every write route refuses with 403)
+runs on Railway, GitHub-connected, so **a merge to `master` is a deploy**. See
+`DEPLOY.md`. Small follow-ups live under "Weekend 2026-10-24" in `TASKS.md`.
 
 <!-- factotum:blocked-protocol -->
 **Blockers → `BLOCKED.md` (system standard).** Anything only Evan can resolve — a credential, a deploy, external access, or a decision — goes in a root `BLOCKED.md`: one `- [ ]` per blocker, prefixed 🔴 blocking / 🟡 nice-to-have, **each with the specific steps a human takes to unblock it** (the action, where, any URL / path / env-var). Factotum's blocked-router scans every `BLOCKED.md` under `~/Documents` and mirrors open items into Evan's todo dashboard, so nothing waits on him invisibly. Keep the file even when nothing is blocked — heading plus "nothing blocked right now" and zero `- [ ]` lines. Full rule: Evan's global `~/.claude/CLAUDE.md`.

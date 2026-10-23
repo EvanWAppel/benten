@@ -4,7 +4,7 @@
 document is the plan for turning her workshop from a drawer of notes into a
 bench with tools on it — without losing the thing that made the drawers work.*
 
-Status: **draft** · Owner: Evan · Last updated: 2026-08-01
+Status: **built**: Phases 1–4 shipped (see [`TASKS.md`](./TASKS.md)) · Owner: Evan · Last updated: 2026-10-22
 
 ---
 
@@ -57,9 +57,9 @@ single UI, modules that share an audio engine and a file layer.
   no bundler; matches benten's "open a file, no framework" ethos.
 - **Music theory** — [`tonal.js`](https://github.com/tonaljs/tonal) in the
   browser, so we don't reimplement scales/chords/keys.
-- **Audio** (later modules) — the **Web Audio API** in the browser: `getUserMedia`
-  for mic capture, `MediaRecorder`/`AudioWorklet` for recording, overdub, and
-  effects. All audio is client-side; the backend only stores the resulting files.
+- **Audio** (Phases 1.5–4) — the **Web Audio API** in the browser: `getUserMedia`
+  for mic capture, an `AudioWorklet` for recording and overdub, and native nodes
+  for effects (§8). All audio is client-side; the backend only stores the resulting files.
 
 **Runtime & Factotum integration:**
 - Runs at `http://127.0.0.1:8788` (distinct from todo-dashboard's `:8787`).
@@ -109,8 +109,8 @@ on the neck?*
 ### 4.3 v1 scope (out — deliberately deferred)
 
 - **All audio / playback** — clicking to hear a chord, the practice loop, the
-  metronome. This is the *very next* increment (§5, Phase 1.5), not v1.
-- Piano keyboard diagram (fretboard only for v1).
+  metronome. This was the next increment after v1 (§5, Phase 1.5), now shipped.
+- Piano keyboard diagram (fretboard only for v1). *Added after v1 as a view toggle on the scale board (W-06).*
 - Other fretted instruments (bass, ukulele, mandolin) — one tuning, guitar, first.
 - Deep theory: modal interchange, secondary dominants, tension/avoid-note maps,
   substitutions.
@@ -135,9 +135,9 @@ Phases are sequential; each ends with something usable, not a half-built layer.
   in the local working dir, with a session note written to `recording/sessions/`
   and captured ideas offered to `riffs/`.
 - **Phase 3 — Tabs.** Search for tablature and reference material fast, surfaced
-  next to the relevant `instruments/` notes. (Source/ToS is an open question — §8.)
-- **Phase 4 — Effects.** A modular **effect-chain builder** over Web Audio
-  (`AudioWorklet`): wire up delay/reverb/distortion/filter blocks, audition them on
+  next to the relevant `instruments/` notes. (Source: Songsterr, settled in §8.)
+- **Phase 4 — Effects.** A modular **effect-chain builder** over native Web Audio
+  nodes (§8): wire up delay/reverb/distortion/filter blocks, audition them on
   Studio takes, and save chains as presets. The hardest DSP work; last on purpose.
 
 ## 6. Non-goals
@@ -162,13 +162,27 @@ This is a personal tool, so the only honest metric is use.
 
 ## 8. Open questions & risks
 
-- **Tab search source (Phase 3).** Most tab sites have scraping/ToS constraints.
-  Decide the source (an API, a licensed source, or user-supplied local tab files)
-  before building. Flag, don't assume.
-- **Effects scope (Phase 4).** "Design my own effects" = a modular chain of DSP
-  *primitives* wired and saved as presets, not authoring novel DSP algorithms from
-  scratch. Confirm before Phase 4.
-- **Audio latency (Phase 2).** Browser overdub latency (monitoring + round-trip)
-  may need a manual offset/calibration step to keep overdubs in time.
-- **Fretboard reuse.** Build the fretboard renderer tuning-agnostic from the start
-  so extending to bass/uke/mandolin later is configuration, not a rewrite.
+All four were resolved during the build. The original question is kept for
+context, and each one points to where it was settled.
+
+- **Tab search source (Phase 3).** *Resolved: Songsterr.* Most tab sites have
+  scraping/ToS constraints, so the source (an API, a licensed source, or
+  user-supplied local tab files) had to be decided before building. It is now an
+  external API, **Songsterr**. The network is touched only on the search path, and
+  saving keeps a Markdown reference that links out, so no tab content is scraped.
+  The source is one swappable constant in `src/benten/tabs.py`. See `TASKS.md` →
+  Phase 3; its Ledger entry is drafted in `DECISIONS.md` (W-02).
+- **Effects scope (Phase 4).** *Resolved: native primitives.* "Design my own
+  effects" means a modular chain of DSP *primitives* wired and saved as presets,
+  not authoring novel DSP algorithms. The four core blocks map onto native Web
+  Audio nodes (`WaveShaper`, `BiquadFilter`, `Delay` + feedback, `Convolver`), so
+  no hand-written `AudioWorklet` sample math is needed. See `TASKS.md` → Phase 4;
+  its Ledger entry is drafted in `DECISIONS.md` (W-02).
+- **Audio latency (Phase 2).** *Resolved: front-trim offset.* Browser overdub
+  latency (monitoring + round-trip) is handled by a manual offset that front-trims
+  the overdub in milliseconds. Dialing it in by ear still wants a human at the
+  machine. See `TASKS.md` → Group V and Group X.
+- **Fretboard reuse.** *Resolved: tuning-agnostic core.* The fretboard renderer
+  was built tuning-agnostic from the start (`TASKS.md` → Group F), so extending to
+  bass/uke/mandolin is configuration, not a rewrite. That extension is weekend
+  task W-05.

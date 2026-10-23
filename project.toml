@@ -1,0 +1,39 @@
+# Drafted by the 2026-10-24 weekend-prep session on 2026-10-22; NOT yet verified in
+# benten's own session. Format: ~/Documents/_system/docs/project-toml.md
+
+[project]
+name = "benten"
+group = "portfolio"
+kind = "app"
+status = "active"
+repo = "EvanWAppel/benten"
+visibility = "public"         # gh repo view, 2026-10-22
+on_site = true                # enki data/projects.ts has a "benten" card (featured)
+verified = false
+
+[deploy]
+host = "railway"              # railway.json + Dockerfile; DEPLOY.md
+services = ["benten"]         # inferred from origin benten-production.up.railway.app — confirm the Railway service name
+domain = ""                   # no custom domain; README links the Railway origin
+origin_urls_closed = false    # benten-production.up.railway.app/health → 200 {"demo": true}, 2026-10-22
+
+[auth]
+scheme = "none"               # local-first single-user app; public demo is read-only (BENTEN_DEMO=1 → writes 403)
+access_list = ""
+target = "unknown"            # no plan recorded for gating the demo; it's read-only by design
+
+[data]
+db = "files"                  # Markdown drawers + git-ignored audio/ dir; no database
+
+[demo]
+status = "live"
+url = "https://benten-production.up.railway.app/"
+path = "/"                    # whole app is the demo
+
+[keys]
+paid = []                     # tab search hits Songsterr's public API, no key
+isolated = "n/a"
+spend_cap = "n/a"
+
+[platform]
+done = []
