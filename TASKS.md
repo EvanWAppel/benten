@@ -64,7 +64,7 @@ Convention: one task = one small, verifiable change. Keep them that size.
 - [x] Plot a given scale's notes across the neck.
 - [x] Highlight chord tones vs. the rest of the scale distinctly.
 - [x] Toggle which suggested scale is shown on the neck.
-- [x] Label notes / degrees on the diagram. *(note names; degree toggle deferred)*
+- [x] Label notes / degrees on the diagram. *(note names; degree toggle added in W-03)*
 - [x] Chord shapes: per-chord ▦ toggle shows a compact chord-box diagram (how to
       fret an unfamiliar chord) — one low, playable, root-in-bass voicing computed
       from the chord tones + tuning. Open shapes drawn at the nut, barre shapes with
@@ -236,7 +236,7 @@ a merge to `master` redeploys the Railway demo). See `PRIMER.md`.
 
 - [x] **W-01** Docs refresh: CLAUDE.md "Current state", PRD status/date, PRD §8 open questions marked resolved.
 - [x] **W-02** DECISIONS.md drafts: Songsterr tab source; Effects = native Web Audio primitives (awaiting Evan's confirmation).
-- [ ] **W-03** Fretboard note/degree label toggle (`fretboardSVG({labels})` + Chords UI toggle), tested.
+- [x] **W-03** Fretboard note/degree label toggle (`fretboardSVG({labels})` + Chords UI toggle), tested.
 - [ ] **W-04** Test that every non-GET route is refused (403) in demo mode, by enumerating `app.routes`.
 - [ ] **W-05** Instrument tunings catalog (guitar/bass/uke/mandolin) + selector for the scale board, tested.
 - [ ] **W-06** Piano keyboard diagram (`keyboardSVG`) with degree colours + chord-tone ring, tested.

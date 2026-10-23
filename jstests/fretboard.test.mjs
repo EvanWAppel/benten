@@ -44,3 +44,24 @@ test("chord-box finger dots carry a note tooltip", () => {
   assert.match(svg, /<title>[A-G][#b]? · fret \d<\/title>/);
   assert.match(svg, /<title>[A-G][#b]? · open<\/title>/);
 });
+
+test("the scale board labels dots with note names by default", () => {
+  const plain = fretboardSVG({ scale: "C minor pentatonic", chordSymbol: "Cm" });
+  assert.equal(fretboardSVG({ scale: "C minor pentatonic", chordSymbol: "Cm", labels: "note" }), plain);
+  assert.match(plain, /class="fb-label">Eb<\/text>/);
+  assert.doesNotMatch(plain, /class="fb-label">♭3<\/text>/);
+});
+
+test("labels: degree prints scale degrees on the dots, tooltips unchanged", () => {
+  const svg = fretboardSVG({ scale: "C minor pentatonic", chordSymbol: "Cm", labels: "degree" });
+  const labels = [...svg.matchAll(/class="fb-label">([^<]*)<\/text>/g)].map((m) => m[1]);
+  assert.ok(labels.length > 0);
+  assert.deepEqual([...new Set(labels)].sort(), ["1", "4", "5", "♭3", "♭7"].sort());
+  assert.match(svg, /<title>Eb · degree ♭3 · chord tone<\/title>/); // tooltip keeps the note
+  assert.match(svg, /class="fb-dot fb-deg-3 is-chord"/); // colours unchanged
+});
+
+test("an unknown labels value falls back to note names", () => {
+  const plain = fretboardSVG({ scale: "C major" });
+  assert.equal(fretboardSVG({ scale: "C major", labels: "bogus" }), plain);
+});

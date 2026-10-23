@@ -349,6 +349,7 @@ main {
 .fretboard-wrap { margin-top: 16px; padding: 18px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
 .fretboard-wrap h4 { margin: 0 0 12px; font: 400 17px var(--serif); color: var(--ink-2); }
 .on-guitar { font-weight: 400; font-size: 0.8rem; }
+.fb-labels { margin: 0 0 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .fretboard { display: block; width: 100%; max-width: 100%; height: auto; background: var(--board); border: 1px solid var(--line-2); border-radius: 8px; padding: 12px; }
 
 .fb-string { stroke: #565c66; stroke-width: 1; }

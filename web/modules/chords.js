@@ -19,6 +19,7 @@ const state = {
   progression: [], // chord symbols, in order
   active: null, // { scale, chordSymbol } currently shown on the fretboard
   shape: null, // chord symbol whose fingering box is currently shown, if any
+  labels: "note", // fretboard dot labels: "note" (C, E♭…) or "degree" (1, ♭3…)
   // practice-loop settings
   tempo: 90,
   beatsPerBar: 4,
@@ -209,10 +210,16 @@ function renderFretboard() {
   const degrees = scaleLegend(scale)
     .map((d) => `<span class="deg"><span class="key-dot fb-deg-${d.num}"></span>${d.label}</span>`)
     .join("");
+  const labelBtn = (value, text) =>
+    `<button class="scale-pick ${state.labels === value ? "is-active" : ""}" data-labels="${value}"
+             aria-pressed="${state.labels === value}">${text}</button>`;
   return `
     <div class="fretboard-wrap">
       <h4>${chordSymbol} · ${scale} <span class="on-guitar muted">on guitar</span></h4>
-      ${fretboardSVG({ scale, chordSymbol })}
+      <p class="fb-labels muted" role="group" aria-label="fretboard labels">
+        label dots by ${labelBtn("note", "note")} ${labelBtn("degree", "degree")}
+      </p>
+      ${fretboardSVG({ scale, chordSymbol, labels: state.labels })}
       <p class="legend muted">
         ${degrees}
         <span class="deg ring"><span class="key-dot is-chord"></span>${chordSymbol} tone</span>
@@ -300,6 +307,14 @@ function wire() {
       const next = { scale: b.dataset.scale, chordSymbol: b.dataset.chord };
       // Clicking the active scale again toggles it off.
       state.active = isActive(next.scale, next.chordSymbol) ? null : next;
+      render();
+    }),
+  );
+
+  // fretboard dot labels: note names ↔ scale degrees
+  root.querySelectorAll("[data-labels]").forEach((b) =>
+    b.addEventListener("click", () => {
+      state.labels = b.dataset.labels;
       render();
     }),
   );

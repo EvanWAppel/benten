@@ -11,6 +11,7 @@ export function fretboardSVG({
   chordSymbol = "",
   tuning = STANDARD_GUITAR,
   frets = 12,
+  labels = "note", // "note" → spelled names on the dots; "degree" → 1, ♭3, 5…
 } = {}) {
   const sc = Scale.get(scale);
   if (sc.empty) return "";
@@ -77,7 +78,8 @@ export function fretboardSVG({
       // Hover tooltip: note, its scale degree, and whether it's in the current chord.
       const tip = `${spelling.get(pc)} · degree ${labelOf.get(pc)}${chordChroma.has(pc) ? " · chord tone" : ""}`;
       p.push(`<circle cx="${cx}" cy="${cy}" r="10" class="fb-dot ${cls}"><title>${tip}</title></circle>`);
-      p.push(`<text x="${cx}" y="${cy + 3.5}" class="fb-label">${spelling.get(pc)}</text>`);
+      const text = labels === "degree" ? labelOf.get(pc) : spelling.get(pc);
+      p.push(`<text x="${cx}" y="${cy + 3.5}" class="fb-label">${text}</text>`);
     }
   }
   // fret numbers
