@@ -6,28 +6,27 @@
 local FastAPI + no-build vanilla-JS app (Chords, Studio, Tabs, Effects) that writes clean,
 hand-editable Markdown back into the drawers. Markdown stays the source of truth; the app is optional.
 
-**Current state (2026-10-22, `master` @ 42d20e5).** Every build task in `TASKS.md`
-(Groups A–H, Phase 1.5, 2, 3, 4/FF) is done. The only open items left are Evan's own
-dogfood logs (H, X, Phase 3). On `master`, everything passes: `pytest` 39 passed, `node --test` 67
-passed, and ruff and ty are clean. One starlette/httpx deprecation warning is harmless. The public read-only demo
+**Current state (2026-10-23, `master` @ 6d1393e).** Every build task in `TASKS.md`
+(Groups A–H, Phase 1.5, 2, 3, 4/FF) is done, and so is the whole "Weekend 2026-10-24" group
+(W-01…W-06, merged in PR #19). PR #21 cleared the stale Railway blockers and PR #20 synced the
+blocker protocol. The only open `TASKS.md` items are Evan's own dogfood logs (H, X, Phase 3).
+On `master` (measured 2026-10-24), `pytest` 41 passed, `node --test` 85 passed, and ruff and ty
+are clean. One starlette/httpx deprecation warning is harmless. The public read-only demo
 is live at https://benten-production.up.railway.app/ (`/health` returns `demo: true`).
-No PRs are open. The local checkout `~/Documents/portfolio/benten` is on `feat/favicon` with an
-unmerged WIP snapshot commit (a2003c3: `AGENTS.md` and a CLAUDE.md ROCRLL tweak). That is Evan's
-work, so don't redo it and don't touch that checkout.
+No PRs are open. Per `BLOCKED.md`, the local checkout `~/Documents/portfolio/benten` still has an
+unmerged WIP commit on `feat/favicon` (a2003c3: `AGENTS.md` and a CLAUDE.md ROCRLL tweak). That is
+Evan's work, so don't redo it and don't touch that checkout.
 
 **Work in a fresh worktree off `origin/master`, one branch + one PR per task.** Open PRs,
 **never merge**. Railway is GitHub-connected, so a merge to `master` redeploys the public demo.
 
-### Autonomous tasks, in order (ids are in `TASKS.md` → "Weekend 2026-10-24")
+### Autonomous tasks
 
-| # | Task | Done when | Test |
-|---|---|---|---|
-| W-01 | Docs refresh: fix CLAUDE.md's stale "Current state" (still says Group A). Bump the PRD status/date and mark the §8 open questions resolved (tabs = Songsterr, effects = native primitives, latency = front-trim offset), with pointers to TASKS/DECISIONS | No doc claims work is "next" when it has already shipped | `uv run python -m pytest -q` (no regressions) |
-| W-02 | DECISIONS.md: draft two Ledger entries, **marked "Draft — awaiting Evan's confirmation"**: Songsterr as tab source (vs licensed/local files) and Effects = native Web Audio nodes (vs hand-written AudioWorklet DSP). Source them only from TASKS.md/PRD text and don't invent rationale | Two entries appended in the existing format | none (docs) |
-| W-03 | Fretboard degree-label toggle (the "degree toggle deferred" note in Group F): `fretboardSVG({labels: "note"\|"degree"})` + a toggle in the Chords UI | New node tests pass; the default output is unchanged | `node --test jstests/*.mjs` |
-| W-04 | Demo-guard completeness test: enumerate `app.routes` and assert that every non-GET route returns 403 under `BENTEN_DEMO=1`, so a future write route can't slip past `require_writable` | Test passes and fails if the guard is removed from any route | `uv run python -m pytest -q` |
-| W-05 | Instrument tunings (PRD §4.3/§8): a `TUNINGS` catalog (guitar, bass EADG, ukulele GCEA re-entrant, mandolin GDAE) + a selector feeding `fretboardSVG({tuning})`. Keep chord boxes guitar-only unless tests prove otherwise | Tests check string count and open-string notes per tuning; guitar is still the default | `node --test jstests/*.mjs` |
-| W-06 | Piano keyboard diagram (PRD §4.3 deferred): a pure `keyboardSVG({scale, chordSymbol})` with the same degree colours and chord-tone ring as the fretboard, plus a view toggle | Node tests for the highlighted keys, plus a README line | `node --test jstests/*.mjs` |
+**None queued.** The "Weekend 2026-10-24" tasks W-01…W-06 all merged in PR #19 (docs refresh,
+draft Ledger entries, degree-label toggle, demo-guard test, tunings catalog, piano keyboard).
+Every remaining open item in `TASKS.md` is Evan's dogfood log, and everything in `BLOCKED.md`
+is his to do (dogfood logs, confirming the two W-02 draft Ledger entries, the `feat/favicon` WIP,
+verifying `project.toml`). Don't start new work without a task from Evan in `TASKS.md`.
 
 Each PR must leave the full CI set green: `uv run ruff check . && uv run ruff format --check . && uv run ty check && uv run python -m pytest -q && node --test jstests/*.mjs`.
 Install with `uv sync --extra dev --frozen`. Use `python -m pytest`, because the bare `pytest` script won't spawn here.
