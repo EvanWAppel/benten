@@ -37,3 +37,13 @@ spend_cap = "n/a"
 
 [platform]
 done = []
+
+[commands]
+dev = "uv run benten"
+test = "uv run pytest"
+lint = "uv run ruff check . && uv run ty check"
+
+[meta]
+description = "Music study app (Markdown drawers + local FastAPI web app)"
+language = "python"
+tags = ["portfolio", "creative"]
