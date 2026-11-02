@@ -40,10 +40,18 @@ done = []
 
 [commands]
 dev = "uv run benten"
-test = "uv run pytest"
-lint = "uv run ruff check . && uv run ty check"
+test = "uv run python -m pytest -q && node --test jstests/*.mjs"
+lint = "uv run ruff check . && uv run ruff format --check . && uv run ty check"
+setup = "uv sync --extra dev --frozen"
 
 [meta]
 description = "Music study app (Markdown drawers + local FastAPI web app)"
 language = "python"
 tags = ["portfolio", "creative"]
+
+[fleet]                     # joined 2026-11-01 (_system D-051); also has the `fleet` topic
+component = "benten"
+agents = ["claude", "codex"]
+default_model = "sonnet"
+default_branch = "master"
+max_minutes = 45
